@@ -70,7 +70,9 @@ export class UserService {
             });
 
             if (!existingUser) throw CustomError.notFound('User not found');
+            if(existingUser.is_admin) throw CustomError.fobidden('You cannot modify an admin account');
 
+            if(Object.keys(updateUserDto.values).length === 0) throw CustomError.badRequest('The payload cannot be void');
             if (updateUserDto.password) updateUserDto.password = BcryptjsAdaptor.hashPassword(updateUserDto.password);
 
 
@@ -106,6 +108,7 @@ export class UserService {
             });
 
             if (!existingUser) throw CustomError.notFound('User not found');
+            if(existingUser.is_admin) throw CustomError.fobidden('You cannot delete an admin account');
 
             await prismaClient.user.delete({
                 where: { id: idToDelete }

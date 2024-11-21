@@ -7,7 +7,7 @@ export class UserController {
 
     handleError = (res: Response, error: unknown) => {
         if (error instanceof CustomError) {
-            res.json(error.statusCode).json({ ok: false, message: error.message });
+            res.status(error.statusCode).json({ ok: false, message: error.message });
         }
 
         res.status(500).json({ ok: false, message: 'Internal error server' });

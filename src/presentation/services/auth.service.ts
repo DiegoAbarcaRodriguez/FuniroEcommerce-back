@@ -14,7 +14,7 @@ export class AuthService {
             });
 
             if (!existingUser) throw CustomError.notFound('User not found');
-            if (!BcryptjsAdaptor.verifyHashedPassword(loginDto.password, existingUser.password)) throw CustomError.fobidden('The password is not valid');
+            if (!BcryptjsAdaptor.verifyHashedPassword(loginDto.password, existingUser.password)) throw CustomError.unauthorized('The password is not valid');
 
             const token = await JWTAdaptador.generateToken({ id: existingUser.id });
             if (!token) throw CustomError.internalServer('An error has ocurred while the token was generating');

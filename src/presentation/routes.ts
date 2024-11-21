@@ -13,7 +13,7 @@ export class AppRoutes {
 
     // Definir las rutas
     router.use('/api/auth', AuthRoutes.routes);
-    router.use('/api/users', UserRoutes.routes);
+    router.use('/api/user', UserRoutes.routes);
     // router.use('/api/products', );
     // router.use('/api/offers', );
     // router.use('/api/customer', );

@@ -17,7 +17,8 @@ function seed() {
             await prismaClient.user.create({
                 data: {
                     username: 'admin',
-                    password: BcryptjsAdaptor.hashPassword('123456')
+                    password: BcryptjsAdaptor.hashPassword('123456'),
+                    is_admin: true
                 }
             });
             res.json({ ok: true });
