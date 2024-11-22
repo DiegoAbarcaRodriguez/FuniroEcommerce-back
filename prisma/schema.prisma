@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -7,57 +8,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model detail_description {
-  id                      Int         @id @default(autoincrement())
-  filling_material        String?     @db.VarChar(30)
+model furniture {
+  id                      Int               @id @default(autoincrement())
+  user_fk                 String?           @db.Uuid
+  name                    String            @unique @db.VarChar(30)
+  description             String            @db.VarChar(30)
+  main_description        String
+  short_description       String
+  discount                Float?
+  is_new                  Boolean?          @default(false)
+  category                String?           @db.VarChar(30)
+  price                   Float?            @default(0)
+  stock                   Int?              @default(0)
+  sales_package           String            @db.VarChar(30)
+  model_number            String            @unique @db.VarChar(30)
+  secondary_material      String?           @db.VarChar(30)
+  upholstery_material     String?           @db.VarChar(30)
+  upholstery_color        String?           @db.VarChar(30)
+  height                  Float
+  width                   Float
+  depth                   Float?
+  weight                  Float
+  warranty_domestic       Int
+  warranty_general        Int
+  filling_material        String?           @db.VarChar(30)
   has_adjustable_headrest Boolean?
   max_load                Float
-  origin                  String      @db.VarChar(30)
-  furniture               furniture[]
-}
-
-model dimension {
-  id        Int         @id @default(autoincrement())
-  height    Float
-  width     Float
-  depth     Float?
-  weight    Float
-  furniture furniture[]
-}
-
-model furniture {
-  id                     Int                  @id @default(autoincrement())
-  name                   String               @unique @db.VarChar(30)
-  description            String               @db.VarChar(30)
-  main_description       String
-  short_description      String
-  discount               Float?
-  is_new                 Boolean?             @default(false)
-  category               String?              @db.VarChar(30)
-  price                  Float?               @default(0)
-  stock                  Int?                 @default(0)
-  general_description_fk Int?
-  dimension_fk           Int?
-  warranty_fk            Int?
-  detail_description_fk  Int?
-  user_fk                String?              @db.Uuid
-  created_at             DateTime?            @default(dbgenerated("'2024-11-22 05:09:08.57618'::timestamp without time zone")) @db.Timestamp(6)
-  detail_description     detail_description?  @relation(fields: [detail_description_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  dimension              dimension?           @relation(fields: [dimension_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  general_description    general_description? @relation(fields: [general_description_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user                   user?                @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  warranty               warranty?            @relation(fields: [warranty_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  order_furniture        order_furniture[]
-}
-
-model general_description {
-  id                  Int         @id @default(autoincrement())
-  sales_package       String      @db.VarChar(30)
-  model_number        String      @unique @db.VarChar(30)
-  secondary_material  String?     @db.VarChar(30)
-  upholstery_material String?     @db.VarChar(30)
-  upholstery_color    String?     @db.VarChar(30)
-  furniture           furniture[]
+  origin                  String            @db.VarChar(30)
+  created_at              DateTime?         @default(dbgenerated("'2024-11-22 17:21:28.219188'::timestamp without time zone")) @db.Timestamp(6)
+  image                   String            @unique @db.VarChar
+  user                    user?             @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  order_furniture         order_furniture[]
 }
 
 model order {
@@ -82,20 +63,13 @@ model user {
   id         String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   username   String      @unique @db.VarChar(30)
   password   String      @db.VarChar(72)
-  modify_at  DateTime?   @default(dbgenerated("'2024-11-22 05:09:08.721835'::timestamp without time zone")) @db.Timestamp(6)
-  modify_by  String?     @db.Uuid
   is_admin   Boolean?    @default(false)
+  modify_at  DateTime?   @default(dbgenerated("'2024-11-22 17:20:15.064037'::timestamp without time zone")) @db.Timestamp(6)
+  modify_by  String?     @db.Uuid
   furniture  furniture[]
   order      order[]
   user       user?       @relation("userTouser", fields: [modify_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   other_user user[]      @relation("userTouser")
-}
-
-model warranty {
-  id        Int         @id @default(autoincrement())
-  domestic  Int
-  general   Int
-  furniture furniture[]
 }
 
 enum order_status {
