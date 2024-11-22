@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { JWTAdaptador } from "../../config/plugin";
+import { JWTAdaptador, UUIDAdaptor } from "../../config/plugin";
 import { prismaClient } from "../../data";
 
 export class AuthMiddleware {
@@ -16,10 +16,11 @@ export class AuthMiddleware {
             if (!payload) res.status(401).json({ ok: false, message: 'Token not valid' });
 
             const user = await prismaClient.user.findUnique({
-                where: { id: +payload!.id }
+                where: { id: payload!.id }
             });
 
             if (!user) res.status(401).json({ ok: false, message: 'Token not valid - user' });
+            if (!UUIDAdaptor.isValidUUID(user!.id)) res.status(401).json({ ok: false, message: 'Token not valid - user' });
 
             if (!user?.is_admin) res.status(401).json({ ok: false, message: 'The user does not have permission to enter' });
 

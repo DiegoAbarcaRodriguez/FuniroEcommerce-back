@@ -28,7 +28,7 @@ export class UserService {
 
     }
 
-    createUser = async (createUserDto: CreateUserDto, id: number) => {
+    createUser = async (createUserDto: CreateUserDto, id: string) => {
         try {
 
             const existingUser = await prismaClient.user.findUnique({
@@ -59,7 +59,7 @@ export class UserService {
         }
     }
 
-    updateUser = async (updateUserDto: UpdateUserDto, idToUpdate: number, idWhoseModifys: number) => {
+    updateUser = async (updateUserDto: UpdateUserDto, idToUpdate: string, idWhoseModifys: string) => {
         try {
 
 
@@ -98,7 +98,7 @@ export class UserService {
         }
     }
 
-    deleteUser = async (idToDelete: number) => {
+    deleteUser = async (idToDelete: string) => {
         try {
 
             const existingUser = await prismaClient.user.findUnique({

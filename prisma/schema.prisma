@@ -40,8 +40,8 @@ model furniture {
   dimension_fk           Int?
   warranty_fk            Int?
   detail_description_fk  Int?
-  user_fk                Int?
-  created_at             DateTime?            @default(dbgenerated("'2024-11-20 06:59:38.135792'::timestamp without time zone")) @db.Timestamp(6)
+  user_fk                String?              @db.Uuid
+  created_at             DateTime?            @default(dbgenerated("'2024-11-22 05:09:08.57618'::timestamp without time zone")) @db.Timestamp(6)
   detail_description     detail_description?  @relation(fields: [detail_description_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
   dimension              dimension?           @relation(fields: [dimension_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
   general_description    general_description? @relation(fields: [general_description_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -65,7 +65,7 @@ model order {
   total           Float
   status          order_status?
   customer_fk     Int?
-  user_fk         Int?
+  user_fk         String?           @db.Uuid
   user            user?             @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
   order_furniture order_furniture[]
 }
@@ -79,11 +79,11 @@ model order_furniture {
 }
 
 model user {
-  id         Int         @id @default(autoincrement())
+  id         String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   username   String      @unique @db.VarChar(30)
-  password   String      @db.VarChar(60)
-  modify_at  DateTime?   @default(dbgenerated("'2024-11-20 06:59:38.421205'::timestamp without time zone")) @db.Timestamp(6)
-  modify_by  Int?
+  password   String      @db.VarChar(72)
+  modify_at  DateTime?   @default(dbgenerated("'2024-11-22 05:09:08.721835'::timestamp without time zone")) @db.Timestamp(6)
+  modify_by  String?     @db.Uuid
   is_admin   Boolean?    @default(false)
   furniture  furniture[]
   order      order[]

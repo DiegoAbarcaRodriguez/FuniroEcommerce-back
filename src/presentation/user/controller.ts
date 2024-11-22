@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { CustomError } from "../../domain/errors/custom.error";
 import { CreateUserDto, PaginationDto, UpdateUserDto } from "../../domain/dtos";
+import { UUIDAdaptor } from "../../config/plugin";
 
 export class UserController {
 
@@ -38,7 +39,7 @@ export class UserController {
             res.status(400).json({ ok: false, message: error });
         }
 
-        this._userService.createUser(createUserDto!, +req.body.user.id)
+        this._userService.createUser(createUserDto!, req.body.user.id)
             .then(result => res.status(201).json(result))
             .catch(error => this.handleError(res, error));
     }
@@ -48,11 +49,15 @@ export class UserController {
         const [error, updateUserDto] = UpdateUserDto.create(req.body);
         const { id } = req.params;
 
+        if (!UUIDAdaptor.isValidUUID(id)) {
+            res.status(400).json({ ok: false, message: 'The id is not an uuid valid' });
+        }
+
         if (error) {
             res.status(400).json({ ok: false, message: error });
         }
 
-        this._userService.updateUser(updateUserDto!, +id, +req.body.user.id)
+        this._userService.updateUser(updateUserDto!, id, req.body.user.id)
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }
@@ -61,7 +66,12 @@ export class UserController {
 
         const { id } = req.params;
 
-        this._userService.deleteUser(+id)
+        if (!UUIDAdaptor.isValidUUID(id)) {
+            res.status(400).json({ ok: false, message: 'The id is not an uuid valid' });
+        }
+
+
+        this._userService.deleteUser(id)
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }
