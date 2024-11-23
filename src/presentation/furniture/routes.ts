@@ -14,6 +14,7 @@ export class FurnitureRoutes {
         router.get('/', furnitureController.getFurnitures);
         router.get('/:term', furnitureController.getOneFurniture);
         router.patch('/:term', (req, res, next) => AuthMiddleware.validateIsLoggedIn(req, res, next, false), furnitureController.updateFurniture);
+        router.delete('/:term', (req, res, next) => AuthMiddleware.validateIsLoggedIn(req, res, next, false), furnitureController.deleteFurniture);
 
         return router;
     }

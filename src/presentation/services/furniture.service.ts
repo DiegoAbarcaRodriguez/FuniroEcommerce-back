@@ -103,7 +103,7 @@ export class FurnitureService {
             };
 
         } catch (error: any) {
-    
+
             if (error.code === 'P2002') {
                 throw CustomError.badRequest('Some of the exclusive parameters belongs to another record')
             }
@@ -112,5 +112,26 @@ export class FurnitureService {
         }
     }
 
-    
+    deleteFurniture = async (term: string) => {
+        try {
+            const { furniture } = await this.getOneFurniture(term);
+
+            await prismaClient.furniture.delete({
+                where: {
+                    id: furniture.id
+                }
+            });
+
+            return {
+                ok: true,
+                message: `Furniture with id = ${furniture.id} has been eliminated`
+            };
+
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+
 }

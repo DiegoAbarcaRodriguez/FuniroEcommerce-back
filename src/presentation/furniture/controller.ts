@@ -71,4 +71,12 @@ export class FurnitureController {
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }
+
+    deleteFurniture = (req: Request, res: Response) => {
+        const { term } = req.params;
+
+        this._furnitureService.deleteFurniture(term)
+            .then(result => res.json(result))
+            .catch(error => this.handleError(res, error));
+    }
 }
