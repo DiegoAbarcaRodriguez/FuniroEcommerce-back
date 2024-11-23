@@ -11,7 +11,8 @@ export class FurnitureRoutes {
         const furnitureController = new FurnitureController(productService);
 
         router.post('/', AuthMiddleware.validateIsAdmin, furnitureController.createProduct);
-
+        router.get('/', furnitureController.getFurnitures);
+        router.get('/:term', furnitureController.getOneFurniture);
 
         return router;
     }
