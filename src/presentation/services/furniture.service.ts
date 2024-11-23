@@ -1,6 +1,6 @@
 import { findFurnitureWithUniqueParameters } from '@prisma/client/sql'
 import { prismaClient } from "../../data";
-import { CreateFurnitureDto, PaginationDto } from "../../domain/dtos";
+import { CreateFurnitureDto, PaginationDto, UpdateFurnitureDto } from "../../domain/dtos";
 import { CustomError } from '../../domain/errors/custom.error';
 
 
@@ -85,4 +85,32 @@ export class FurnitureService {
             throw error;
         }
     }
+
+    updateFurniture = async (updateFurnitureDto: UpdateFurnitureDto, term: string) => {
+        try {
+            const { furniture } = await this.getOneFurniture(term);
+
+            await prismaClient.furniture.update({
+                data: updateFurnitureDto.values,
+                where: {
+                    id: furniture.id
+                }
+            });
+
+            return {
+                ok: true,
+                message: `The furniture with id = ${furniture.id} has been updated`
+            };
+
+        } catch (error: any) {
+    
+            if (error.code === 'P2002') {
+                throw CustomError.badRequest('Some of the exclusive parameters belongs to another record')
+            }
+            console.log(error);
+            throw error;
+        }
+    }
+
+    
 }

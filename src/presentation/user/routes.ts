@@ -11,7 +11,7 @@ export class UserRoutes {
         const userController = new UserController(userService);
 
         const router = Router();
-        router.use(AuthMiddleware.validateIsAdmin);
+        router.use(AuthMiddleware.validateIsLoggedIn);
         
         router.get('/', userController.getAllUsers);
         router.post('/', userController.createUser);

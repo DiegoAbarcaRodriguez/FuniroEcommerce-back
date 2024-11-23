@@ -3,7 +3,7 @@ import { JWTAdaptador, UUIDAdaptor } from "../../config/plugin";
 import { prismaClient } from "../../data";
 
 export class AuthMiddleware {
-    static async validateIsAdmin(req: Request, res: Response, next: NextFunction) {
+    static async validateIsLoggedIn(req: Request, res: Response, next: NextFunction, mustVerifyIsAdmin: boolean = true) {
         const authorization = req.header('Authorization');
 
         if (!authorization) res.status(401).json({ ok: false, message: 'Token not provided' });
@@ -22,7 +22,7 @@ export class AuthMiddleware {
             if (!user) res.status(401).json({ ok: false, message: 'Token not valid - user' });
             if (!UUIDAdaptor.isValidUUID(user!.id)) res.status(401).json({ ok: false, message: 'Token not valid - user' });
 
-            if (!user?.is_admin) res.status(401).json({ ok: false, message: 'The user does not have permission to enter' });
+            if (mustVerifyIsAdmin && !user?.is_admin) res.status(401).json({ ok: false, message: 'The user does not have permission to enter' });
 
             req.body.user = user;
             next();

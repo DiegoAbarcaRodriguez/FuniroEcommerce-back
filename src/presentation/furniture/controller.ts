@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { FurnitureService } from "../services/furniture.service";
 import { CustomError } from "../../domain/errors/custom.error";
-import { CreateFurnitureDto, PaginationDto } from "../../domain/dtos";
+import { CreateFurnitureDto, PaginationDto, UpdateFurnitureDto } from "../../domain/dtos";
 
 export class FurnitureController {
 
@@ -55,6 +55,19 @@ export class FurnitureController {
         const { term } = req.params;
 
         this._furnitureService.getOneFurniture(term)
+            .then(result => res.json(result))
+            .catch(error => this.handleError(res, error));
+    }
+
+    updateFurniture = (req: Request, res: Response) => {
+        const [error, updateFurnitureDto] = UpdateFurnitureDto.create(req.body);
+        const { term } = req.params;
+
+        if (error) {
+            res.status(400).json({ ok: false, message: error });
+        }
+
+        this._furnitureService.updateFurniture(updateFurnitureDto!, term)
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }
