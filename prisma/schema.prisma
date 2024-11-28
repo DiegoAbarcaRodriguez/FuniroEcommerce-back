@@ -47,7 +47,8 @@ model order {
   status          order_status?
   customer_fk     Int?
   user_fk         String?           @db.Uuid
-  user            user?             @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  customer        customer?         @relation(fields: [customer_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user            user?             @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_user_fk_fkey1")
   order_furniture order_furniture[]
 }
 
@@ -55,6 +56,7 @@ model order_furniture {
   id           Int        @id @default(autoincrement())
   order_fk     Int?
   furniture_fk Int?
+  quantity     Int        @default(0)
   furniture    furniture? @relation(fields: [furniture_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
   order        order?     @relation(fields: [order_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
@@ -70,6 +72,22 @@ model user {
   order      order[]
   user       user?       @relation("userTouser", fields: [modify_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
   other_user user[]      @relation("userTouser")
+}
+
+model customer {
+  id                     Int     @id @default(autoincrement())
+  first_name             String  @db.VarChar(30)
+  last_name              String  @db.VarChar(50)
+  company_name           String? @db.VarChar(30)
+  email                  String  @unique(map: "unique_email") @db.VarChar(40)
+  phone                  BigInt
+  zip_code               Int
+  country                String? @db.VarChar(30)
+  city                   String? @db.VarChar(30)
+  province               String? @db.VarChar(30)
+  street                 String? @db.VarChar(30)
+  additional_information String?
+  order                  order[]
 }
 
 enum order_status {
