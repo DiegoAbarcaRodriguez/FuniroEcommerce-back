@@ -5,19 +5,40 @@ import { CustomError } from '../../domain/errors/custom.error';
 export class UserService {
     constructor() { }
 
-    getAllUsers = async (paginationDto: PaginationDto) => {
+    getAllUsers = async (paginationDto: PaginationDto, user: any) => {
         try {
-            return await prismaClient.user.findMany({
+
+            const allUsers = await prismaClient.user.findMany({
                 take: paginationDto.limit,
                 skip: (paginationDto.page - 1) * paginationDto.limit,
                 orderBy: {
                     modify_at: 'desc'
                 },
-                where: {
-                    is_admin: false
+                select: {
+                    id: true,
+                    username: true,
+                    modify_at: true,
+                    is_admin: true,
+                    user: {
+                        select: {
+                            username: true
+                        }
+                    }
                 }
-
             });
+
+            let users = [];
+            if (user.is_root) {
+                users = allUsers.filter(userElement => userElement.id !== user.id);
+            } else {
+                users = user.is_admin ?
+                    allUsers.filter(userElement => !userElement.is_admin)
+                    : [];
+
+            }
+
+            return users;
+
 
             //todo Complementar objeto con las rutas siguientes de la paginacion y numero total de registros
 
@@ -28,8 +49,15 @@ export class UserService {
 
     }
 
-    createUser = async (createUserDto: CreateUserDto, id: string) => {
+    createUser = async (createUserDto: CreateUserDto, userFromBody: any) => {
         try {
+
+
+            const { id } = userFromBody;
+
+            if (!userFromBody.is_admin) {
+                throw CustomError.fobidden('The user does not possess the privilige to do it');
+            }
 
             const existingUser = await prismaClient.user.findUnique({
                 where: {
@@ -39,17 +67,30 @@ export class UserService {
 
             if (existingUser) throw CustomError.badRequest('The user already exists');
 
-            await prismaClient.user.create({
+            const user = await prismaClient.user.create({
                 data: {
                     username: createUserDto.username,
                     password: BcryptjsAdaptor.hashPassword(createUserDto.password),
-                    modify_by: id
+                    modify_by: id,
+                    is_admin: true
+                },
+                select: {
+                    id: true,
+                    username: true,
+                    modify_at: true,
+                    is_admin: true,
+                    user: {
+                        select: {
+                            username: true
+                        }
+                    }
                 }
             });
 
             return {
                 ok: true,
-                message: 'User created successfully'
+                message: 'User created successfully',
+                user
             };
 
 
@@ -59,8 +100,15 @@ export class UserService {
         }
     }
 
-    updateUser = async (updateUserDto: UpdateUserDto, idToUpdate: string, idWhoseModifys: string) => {
+    updateUser = async (updateUserDto: UpdateUserDto, idToUpdate: string, userFromBody: any) => {
         try {
+
+            const { id: idWhoseModifys } = userFromBody;
+
+            if (!userFromBody.is_admin) {
+                throw CustomError.fobidden('The user does not possess the privilige to do it');
+            }
+
 
 
             const existingUser = await prismaClient.user.findUnique({
@@ -70,25 +118,38 @@ export class UserService {
             });
 
             if (!existingUser) throw CustomError.notFound('User not found');
-            if(existingUser.is_admin) throw CustomError.fobidden('You cannot modify an admin account');
+            if (existingUser.is_root) throw CustomError.fobidden('You cannot modify a root account');
 
-            if(Object.keys(updateUserDto.values).length === 0) throw CustomError.badRequest('The payload cannot be void');
+            if (Object.keys(updateUserDto.values).length === 0) throw CustomError.badRequest('The payload cannot be void');
             if (updateUserDto.password) updateUserDto.password = BcryptjsAdaptor.hashPassword(updateUserDto.password);
 
 
-            await prismaClient.user.update({
+            const updatedUser = await prismaClient.user.update({
                 where: {
                     id: idToUpdate
                 },
                 data: {
                     ...updateUserDto.values,
-                    modify_by: idWhoseModifys
+                    modify_by: idWhoseModifys,
+                    modify_at: new Date()
+                },
+                select: {
+                    id: true,
+                    username: true,
+                    modify_at: true,
+                    is_admin: true,
+                    user: {
+                        select: {
+                            username: true
+                        }
+                    }
                 }
             });
 
             return {
                 ok: true,
-                message: 'User updated successfully'
+                message: 'User updated successfully',
+                user: updatedUser
             };
 
 
@@ -98,9 +159,13 @@ export class UserService {
         }
     }
 
-    deleteUser = async (idToDelete: string) => {
+    deleteUser = async (idToDelete: string, userFromBody: any) => {
         try {
 
+            if (!userFromBody.is_admin) {
+                throw CustomError.fobidden('The user does not possess the privilige to do it');
+            }
+            
             const existingUser = await prismaClient.user.findUnique({
                 where: {
                     id: idToDelete
@@ -108,15 +173,16 @@ export class UserService {
             });
 
             if (!existingUser) throw CustomError.notFound('User not found');
-            if(existingUser.is_admin) throw CustomError.fobidden('You cannot delete an admin account');
+            if (existingUser.is_root) throw CustomError.fobidden('You cannot delete a root account');
 
-            await prismaClient.user.delete({
+            const deletedUser = await prismaClient.user.delete({
                 where: { id: idToDelete }
             });
 
             return {
                 ok: true,
-                message: 'User deleted successfully'
+                message: 'User deleted successfully',
+                user: deletedUser
             };
 
 

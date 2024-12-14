@@ -13,9 +13,8 @@ const plugin_1 = require("./config/plugin");
 const routes_1 = require("./presentation/routes");
 const server_1 = require("./presentation/server");
 (() => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('hola mundo');
-    yield main();
-}));
+    main();
+}))();
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const server = new server_1.Server({

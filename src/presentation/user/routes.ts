@@ -11,12 +11,12 @@ export class UserRoutes {
         const userController = new UserController(userService);
 
         const router = Router();
-        router.use(AuthMiddleware.validateIsLoggedIn);
-        
-        router.get('/', userController.getAllUsers);
-        router.post('/', userController.createUser);
-        router.put('/:id', userController.updateUser);
-        router.delete('/:id', userController.deleteUser);
+        router.use(AuthMiddleware.validateIsLoggedIn as any);
+
+        router.get('/', userController.getAllUsers as any);
+        router.post('/', userController.createUser as any);
+        router.put('/:id', userController.updateUser as any);
+        router.delete('/:id', userController.deleteUser as any);
 
         return router;
     }

@@ -8,24 +8,26 @@ export class UserController {
 
     handleError = (res: Response, error: unknown) => {
         if (error instanceof CustomError) {
-            res.status(error.statusCode).json({ ok: false, message: error.message });
+            return res.status(error.statusCode).json({ ok: false, message: error.message });
         }
 
-        res.status(500).json({ ok: false, message: 'Internal error server' });
+        return res.status(500).json({ ok: false, message: 'Internal error server' });
     }
 
     constructor(private _userService: UserService) { }
 
     getAllUsers = (req: Request, res: Response) => {
         const { limit, page } = req.query;
+        const { user } = req.body;
+
 
         const [error, paginationDto] = PaginationDto.create({ limit, page });
 
         if (error) {
-            res.status(400).json({ ok: false, message: error });
+            return res.status(400).json({ ok: false, message: error });
         }
 
-        this._userService.getAllUsers(paginationDto!)
+        this._userService.getAllUsers(paginationDto!, user)
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
 
@@ -34,12 +36,13 @@ export class UserController {
     createUser = (req: Request, res: Response) => {
 
         const [error, createUserDto] = CreateUserDto.create(req.body);
+        const { user } = req.body;
 
         if (error) {
-            res.status(400).json({ ok: false, message: error });
+            return res.status(400).json({ ok: false, message: error });
         }
 
-        this._userService.createUser(createUserDto!, req.body.user.id)
+        this._userService.createUser(createUserDto!, user)
             .then(result => res.status(201).json(result))
             .catch(error => this.handleError(res, error));
     }
@@ -48,16 +51,17 @@ export class UserController {
 
         const [error, updateUserDto] = UpdateUserDto.create(req.body);
         const { id } = req.params;
+        const { user } = req.body;
 
         if (!UUIDAdaptor.isValidUUID(id)) {
-            res.status(400).json({ ok: false, message: 'The id is not an uuid valid' });
+            return res.status(400).json({ ok: false, message: 'The id is not an uuid valid' });
         }
 
         if (error) {
-            res.status(400).json({ ok: false, message: error });
+            return res.status(400).json({ ok: false, message: error });
         }
 
-        this._userService.updateUser(updateUserDto!, id, req.body.user.id)
+        this._userService.updateUser(updateUserDto!, id, user)
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }
@@ -65,13 +69,14 @@ export class UserController {
     deleteUser = (req: Request, res: Response) => {
 
         const { id } = req.params;
+        const { user } = req.body;
 
         if (!UUIDAdaptor.isValidUUID(id)) {
-            res.status(400).json({ ok: false, message: 'The id is not an uuid valid' });
+            return res.status(400).json({ ok: false, message: 'The id is not an uuid valid' });
         }
 
 
-        this._userService.deleteUser(id)
+        this._userService.deleteUser(id, user)
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }
