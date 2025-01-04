@@ -13,8 +13,6 @@ model furniture {
   user_fk                 String?           @db.Uuid
   name                    String            @unique @db.VarChar(30)
   description             String            @db.VarChar(30)
-  main_description        String
-  short_description       String
   discount                Float?
   is_new                  Boolean?          @default(false)
   category                String?           @db.VarChar(30)
@@ -36,7 +34,7 @@ model furniture {
   max_load                Float
   origin                  String            @db.VarChar(30)
   created_at              DateTime?         @default(now()) @db.Timestamp(6)
-  image                   String            @unique @db.VarChar
+  image                   String?           @unique @db.VarChar
   user                    user?             @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
   order_furniture         order_furniture[]
 }

@@ -5,11 +5,8 @@ export class CreateFurnitureDto {
     constructor(
         public name: string,
         public description: string,
-        public main_description: string,
-        public short_description: string,
-        public image: string,
         public user_fk: string,
-
+        public image: string,
 
         public sales_package: string,
         public model_number: string,
@@ -45,8 +42,6 @@ export class CreateFurnitureDto {
     static create(object: { [key: string]: any }): [string?, CreateFurnitureDto?] {
         if (!object.name) return ['name is missing'];
         if (!object.description) return ['description is missing'];
-        if (!object.short_description) return ['short_description is missing'];
-        if (!object.main_description) return ['main_description is missing'];
         if (!object.image) return ['image is missing'];
         if (!object.user_fk) return ['user_fk is missing'];
         if (!UUIDAdaptor.isValidUUID(object.user_fk)) return ['user_fk is not valid'];
@@ -65,10 +60,8 @@ export class CreateFurnitureDto {
         return [undefined, new CreateFurnitureDto(
             object.name,
             object.description,
-            object.main_description,
-            object.short_description,
-            object.image,
             object.user_fk,
+            object.image,
             object.sales_package,
             object.model_number,
             object.height,

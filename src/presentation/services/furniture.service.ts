@@ -1,3 +1,4 @@
+import { furniture } from './../../../node_modules/.prisma/client/index.d';
 import { findFurnitureWithUniqueParameters } from '@prisma/client/sql'
 import { prismaClient } from "../../data";
 import { CreateFurnitureDto, PaginationDto, UpdateFurnitureDto } from "../../domain/dtos";
@@ -7,12 +8,12 @@ import { CustomError } from '../../domain/errors/custom.error';
 export class FurnitureService {
     createFurniture = async (createFurnitureDto: CreateFurnitureDto) => {
 
-        const { name, model_number, image } = createFurnitureDto;
+        const { name, model_number } = createFurnitureDto;
 
         try {
 
-            const existingFurniture = await prismaClient.$queryRawTyped(findFurnitureWithUniqueParameters(name, model_number, image));
-            if (existingFurniture[0]) throw CustomError.badRequest('There is an existing furniture with the exclusive parameters');
+            const existingFurniture = await prismaClient.$queryRawTyped(findFurnitureWithUniqueParameters(name, model_number));
+            if (existingFurniture[0]) throw CustomError.badRequest('There is an existing furniture with either the same name or model_number');
 
             await prismaClient.furniture.create({
                 data: createFurnitureDto

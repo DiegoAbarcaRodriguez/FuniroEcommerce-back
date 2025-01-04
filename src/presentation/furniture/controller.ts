@@ -7,16 +7,18 @@ export class FurnitureController {
 
     private handleError = (res: Response, error: unknown) => {
         if (error instanceof CustomError) {
-            res.status(error.statusCode).json({ ok: false, message: error.message });
+            return res.status(error.statusCode).json({ ok: false, message: error.message });
         }
 
-        res.status(500).json({ ok: false, message: 'Internal error server' });
+        return res.status(500).json({ ok: false, message: 'Internal error server' });
     }
 
 
     constructor(private _furnitureService: FurnitureService) { }
 
     createProduct = (req: Request, res: Response) => {
+        console.log(req.body)
+        const { user } = req.body;
         const [error, createFurnitureDto] = CreateFurnitureDto.create({
             ...req.body,
             height: +req.body.height,
@@ -26,11 +28,12 @@ export class FurnitureController {
             warranty_general: +req.body.warranty_general,
             max_load: +req.body.max_load,
             discount: +req.body.discount || undefined,
-            depth: +req.body.depth || undefined
+            depth: +req.body.depth || undefined,
+            user_fk: user.id
         });
 
         if (error) {
-            res.status(400).json({ ok: false, message: error });
+            return res.status(400).json({ ok: false, message: error });
         }
 
         this._furnitureService.createFurniture(createFurnitureDto!)

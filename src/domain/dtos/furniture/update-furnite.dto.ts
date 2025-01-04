@@ -5,10 +5,8 @@ export class UpdateFurnitureDto {
     constructor(
         public name?: string,
         public description?: string,
-        public main_description?: string,
-        public short_description?: string,
-        public image?: string,
         public user_fk?: string,
+        public image?: string,
 
 
         public sales_package?: string,
@@ -49,9 +47,6 @@ export class UpdateFurnitureDto {
 
         if (this.name) object.name = this.name;
         if (this.description) object.description = this.description;
-        if (this.main_description) object.main_description = this.main_description;
-        if (this.short_description) object.short_description = this.short_description;
-        if (this.image) object.image = this.image;
         if (this.user_fk) object.user_fk = this.user_fk;
 
 
@@ -95,10 +90,8 @@ export class UpdateFurnitureDto {
         return [undefined, new UpdateFurnitureDto(
             object.name,
             object.description,
-            object.main_description,
-            object.short_description,
-            object.image,
             object.user_fk,
+            object.image,
             object.sales_package,
             object.model_number,
             object.height,
