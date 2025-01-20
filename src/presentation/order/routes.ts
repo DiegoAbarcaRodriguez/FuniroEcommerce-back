@@ -10,8 +10,8 @@ export class OrderRoutes {
 
         const router = Router();
 
-        router.post('/', orderController.createOrder);
-        router.post('/validate-furnitures', orderController.validateFurnitures);
+        router.post('/', orderController.createOrder as any);
+        router.post('/validate-furnitures', orderController.validateFurnitures as any);
 
         return router;
     }

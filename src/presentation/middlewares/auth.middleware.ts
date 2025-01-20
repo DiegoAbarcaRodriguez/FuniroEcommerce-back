@@ -15,13 +15,13 @@ export class AuthMiddleware {
         try {
             const payload = await JWTAdaptador.validateToken<{ id: string }>(token);
             if (!payload) return res.status(401).json({ ok: false, message: 'Token not valid' });
+            if (!UUIDAdaptor.isValidUUID(payload!.id)) return res.status(401).json({ ok: false, message: 'Token not valid - payload' });
 
             const user = await prismaClient.user.findUnique({
                 where: { id: payload!.id }
             });
 
             if (!user) return res.status(401).json({ ok: false, message: 'Token not valid - user' });
-            if (!UUIDAdaptor.isValidUUID(user!.id)) return res.status(401).json({ ok: false, message: 'Token not valid - user' });
 
             req.body.user = user;
             next();

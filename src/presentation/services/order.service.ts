@@ -1,7 +1,7 @@
-import { PrismaClient } from ".prisma/client";
 import { prismaClient } from "../../data";
 import { CreateOrderDto } from "../../domain/dtos";
 import { CustomError } from "../../domain/errors/custom.error";
+import { ValidateStatusFurnituresDto } from '../../domain/dtos/order/validate-status-furnitures.dto';
 
 
 
@@ -76,11 +76,17 @@ export class OrderService {
 
         return new Promise(resolve => {
             let count = 0;
+            let stock: number = 0;
             createOrderDto.furniture_id.forEach(async (id, index) => {
                 try {
+                    stock = +stocks[index] - +createOrderDto.quantity[index];
+                    if (stock < 0) {
+                        resolve('One of the selected products are not available anymore!');
+                    }
+
                     await tx.furniture.update({
                         where: { id: +id },
-                        data: { stock: (+stocks[index]) - (+createOrderDto.quantity[index]) }
+                        data: { stock }
                     });
 
                     count++;
@@ -140,7 +146,7 @@ export class OrderService {
                 }
 
                 const [errorByGettingStockOfFurnitures, stocks] = await this.getStockOfFurnitures(tx, createOrderDto);
-                
+
                 if (errorByGettingStockOfFurnitures) {
                     throw CustomError.badRequest(errorByGettingStockOfFurnitures!);
                 }
@@ -201,7 +207,9 @@ export class OrderService {
         });
     }
 
-    validateFurnitures = async (furniture_ids: string[], quantities: string[]) => {
+    validateFurnitures = async (valitateStatusFurnituresDto: ValidateStatusFurnituresDto) => {
+
+        const { furniture_id: furniture_ids, quantity: quantities } = valitateStatusFurnituresDto;
 
         try {
 

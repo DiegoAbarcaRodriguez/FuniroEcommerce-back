@@ -4,7 +4,7 @@ import { LoginUserDto } from "../../domain/dtos/auth/login-user.dto";
 import { CustomError } from "../../domain/errors/custom.error";
 
 export class AuthService {
-    authenticate = async (loginDto: LoginUserDto, mustValidateAdminStatus: boolean) => {
+    authenticate = async (loginDto: LoginUserDto) => {
         try {
 
             const existingUser = await prismaClient.user.findUnique({
@@ -16,9 +16,6 @@ export class AuthService {
             if (!existingUser) throw CustomError.notFound('User not found');
             if (!BcryptjsAdaptor.verifyHashedPassword(loginDto.password, existingUser.password)) throw CustomError.unauthorized('The password is not valid');
 
-            if (mustValidateAdminStatus && !existingUser.is_admin) {
-                throw CustomError.fobidden('The user does not possess the privilige to access');
-            }
 
             const token = await JWTAdaptador.generateToken({ id: existingUser.id });
             if (!token) throw CustomError.internalServer('An error has ocurred while the token was generating');
@@ -35,7 +32,7 @@ export class AuthService {
     }
 
     checkLogginStatus = async (user: any) => {
-        const { id, password, ...modifiedUser } = user;
+        const { id, password, ...userData } = user;
 
         try {
 
@@ -46,7 +43,7 @@ export class AuthService {
             return {
                 ok: true,
                 token,
-                user: modifiedUser
+                user: userData
             }
         } catch (error) {
             console.log(error);

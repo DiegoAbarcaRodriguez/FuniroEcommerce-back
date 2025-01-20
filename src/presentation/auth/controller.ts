@@ -18,14 +18,13 @@ export class AuthController {
 
     login = (req: Request, res: Response) => {
         const [error, loginUserDto] = LoginUserDto.create(req.body);
-        const { mustValidateAdminStatus = false } = req.body;
 
         if (error) {
             res.status(400).json({ ok: false, message: error });
             return;
         };
 
-        this._authService.authenticate(loginUserDto!,mustValidateAdminStatus)
+        this._authService.authenticate(loginUserDto!)
             .then((result) => res.json(result))
             .catch((error) => this.handleError(res, error));
     }

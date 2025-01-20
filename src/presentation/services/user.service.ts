@@ -2,11 +2,16 @@ import { BcryptjsAdaptor } from '../../config/plugin';
 import { prismaClient } from '../../data/index';
 import { CreateUserDto, PaginationDto, UpdateUserDto } from '../../domain/dtos';
 import { CustomError } from '../../domain/errors/custom.error';
+
 export class UserService {
     constructor() { }
 
     getAllUsers = async (paginationDto: PaginationDto, user: any) => {
         try {
+
+            if (!user.is_admin) {
+                throw CustomError.fobidden('You do not have the privilege to consult that information');
+            }
 
             const allUsers = await prismaClient.user.findMany({
                 take: paginationDto.limit,
@@ -27,15 +32,11 @@ export class UserService {
                 }
             });
 
-            let users = [];
-            if (user.is_root) {
-                users = allUsers.filter(userElement => userElement.id !== user.id);
-            } else {
-                users = user.is_admin ?
-                    allUsers.filter(userElement => !userElement.is_admin)
-                    : [];
 
-            }
+            const users = user.is_root
+                ? allUsers.filter(userElement => userElement.id !== user.id)
+                : allUsers.filter(userElement => !userElement.is_admin);
+
 
             return users;
 
@@ -56,7 +57,7 @@ export class UserService {
             const { id } = userFromBody;
 
             if (!userFromBody.is_admin) {
-                throw CustomError.fobidden('The user does not possess the privilige to do it');
+                throw CustomError.fobidden('You do not possess the privilige to do it');
             }
 
             const existingUser = await prismaClient.user.findUnique({
@@ -165,7 +166,7 @@ export class UserService {
             if (!userFromBody.is_admin) {
                 throw CustomError.fobidden('The user does not possess the privilige to do it');
             }
-            
+
             const existingUser = await prismaClient.user.findUnique({
                 where: {
                     id: idToDelete

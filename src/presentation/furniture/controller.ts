@@ -46,7 +46,7 @@ export class FurnitureController {
         const [error, paginationDto] = PaginationDto.create({ limit: +limit, page: +page });
 
         if (error) {
-            res.status(400).json({ ok: false, message: error });
+            return res.status(400).json({ ok: false, message: error });
         }
 
         this._furnitureService.getFurnitures(paginationDto!)
@@ -67,7 +67,7 @@ export class FurnitureController {
         const { term } = req.params;
 
         if (error) {
-            res.status(400).json({ ok: false, message: error });
+            return res.status(400).json({ ok: false, message: error });
         }
 
         this._furnitureService.updateFurniture(updateFurnitureDto!, term)
