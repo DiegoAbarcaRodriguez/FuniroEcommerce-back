@@ -11,10 +11,10 @@ export class FurnitureRoutes {
         const furnitureController = new FurnitureController(productService);
 
         router.post('/', AuthMiddleware.validateIsLoggedIn as any, furnitureController.createProduct as any);
-        router.get('/', furnitureController.getFurnitures);
-        router.get('/:term', furnitureController.getOneFurniture);
-        router.patch('/:term', AuthMiddleware.validateIsLoggedIn as any, furnitureController.updateFurniture);
-        router.delete('/:term', AuthMiddleware.validateIsLoggedIn as any, furnitureController.deleteFurniture);
+        router.get('/', furnitureController.getFurnitures as any);
+        router.get('/:term', furnitureController.getOneFurniture as any);
+        router.patch('/:term', AuthMiddleware.validateIsLoggedIn as any, furnitureController.updateFurniture as any);
+        router.delete('/:term', AuthMiddleware.validateIsLoggedIn as any, furnitureController.deleteFurniture as any);
 
         return router;
     }

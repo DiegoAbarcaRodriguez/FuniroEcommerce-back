@@ -35,7 +35,7 @@ export class UserService {
 
             const users = user.is_root
                 ? allUsers.filter(userElement => userElement.id !== user.id)
-                : allUsers.filter(userElement => !userElement.is_admin);
+                : allUsers.filter(userElement => userElement.is_admin === false);
 
 
             return users;
