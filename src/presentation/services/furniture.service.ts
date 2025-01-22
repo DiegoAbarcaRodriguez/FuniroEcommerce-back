@@ -43,9 +43,12 @@ export class FurnitureService {
                 orderBy: { created_at: 'desc' },
             });
 
+            const total = await prismaClient.furniture.count();
+
             return {
                 ok: true,
-                furnitures
+                furnitures,
+                total
             }
 
         } catch (error) {

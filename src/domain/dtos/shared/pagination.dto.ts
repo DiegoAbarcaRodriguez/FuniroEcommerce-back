@@ -23,6 +23,6 @@ export class PaginationDto {
             return ['Limit must be greater or equal than 1']
         }
 
-        return [undefined, new PaginationDto(page, limit)];
+        return [undefined, new PaginationDto(+page, +limit)];
     }
 }

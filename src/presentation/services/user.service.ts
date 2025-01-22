@@ -32,13 +32,24 @@ export class UserService {
                 }
             });
 
+            let total: number = 0;
+
+            if (user.is_root) {
+                total = await prismaClient.user.count();
+            } else {
+                total = await prismaClient.user.count({ where: { is_admin: false } });
+            }
+
 
             const users = user.is_root
                 ? allUsers.filter(userElement => userElement.id !== user.id)
                 : allUsers.filter(userElement => userElement.is_admin === false);
 
 
-            return users;
+            return {
+                users,
+                total
+            };
 
 
             //todo Complementar objeto con las rutas siguientes de la paginacion y numero total de registros
