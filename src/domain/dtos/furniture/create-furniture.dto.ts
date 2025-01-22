@@ -56,6 +56,9 @@ export class CreateFurnitureDto {
         if (!object.max_load || object.max_load <= 0) return ['max_load is missing or not valid'];
         if (!object.origin) return ['origin is missing'];
 
+        if (object.price && object.price < 0) return ['price have to be positive'];
+        if (object.stock && object.stock < 0) return ['stock have to be positive'];
+
 
         return [undefined, new CreateFurnitureDto(
             object.name,

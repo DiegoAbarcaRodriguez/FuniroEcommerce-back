@@ -85,7 +85,8 @@ export class UpdateFurnitureDto {
     static create(object: { [key: string]: any }): [string?, UpdateFurnitureDto?] {
 
         if (object.user_fk && !UUIDAdaptor.isValidUUID(object.user_fk)) return ['user_fk is not valid'];
-
+        if (object.price && object.price < 0) return ['price have to be positive'];
+        if (object.stock && object.stock < 0) return ['stock have to be positive'];
 
         return [undefined, new UpdateFurnitureDto(
             object.name,

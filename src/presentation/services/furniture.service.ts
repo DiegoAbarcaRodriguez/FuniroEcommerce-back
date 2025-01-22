@@ -134,5 +134,18 @@ export class FurnitureService {
         }
     }
 
+    getFurnitureByModelNumber = async (model: string) => {
+        try {
+            console.log(model)
+            const furniture = await prismaClient.furniture.findUnique({ where: { model_number: model } });
+
+            if (!furniture) throw CustomError.notFound(`The furniture with ${model} does not exists`);
+
+            return { ok: true }
+
+        } catch (error) {
+            throw error;
+        }
+    }
 
 }

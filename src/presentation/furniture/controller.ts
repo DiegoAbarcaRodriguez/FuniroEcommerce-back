@@ -82,4 +82,13 @@ export class FurnitureController {
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }
+
+    getFurnitureByModelNumber = (req: Request, res: Response) => {
+        const { model } = req.params;
+
+        this._furnitureService.getFurnitureByModelNumber(model)
+            .then(result => res.json(result))
+            .catch(error => this.handleError(res, error));
+    }
+
 }
