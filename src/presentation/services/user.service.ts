@@ -13,37 +13,52 @@ export class UserService {
                 throw CustomError.fobidden('You do not have the privilege to consult that information');
             }
 
-            const allUsers = await prismaClient.user.findMany({
-                take: paginationDto.limit,
-                skip: (paginationDto.page - 1) * paginationDto.limit,
-                orderBy: {
-                    modify_at: 'desc'
-                },
-                select: {
-                    id: true,
-                    username: true,
-                    modify_at: true,
-                    is_admin: true,
-                    user: {
-                        select: {
-                            username: true
-                        }
-                    }
-                }
-            });
-
+            let users = [];
             let total: number = 0;
 
             if (user.is_root) {
+                users = await prismaClient.user.findMany({
+                    take: paginationDto.limit,
+                    skip: (paginationDto.page - 1) * paginationDto.limit,
+                    orderBy: {
+                        modify_at: 'desc'
+                    },
+                    select: {
+                        id: true,
+                        username: true,
+                        modify_at: true,
+                        is_admin: true,
+                        user: {
+                            select: {
+                                username: true
+                            }
+                        }
+                    }
+                });
                 total = await prismaClient.user.count();
             } else {
+                users = await prismaClient.user.findMany({
+                    take: paginationDto.limit,
+                    skip: (paginationDto.page - 1) * paginationDto.limit,
+                    orderBy: {
+                        modify_at: 'desc'
+                    },
+                    select: {
+                        id: true,
+                        username: true,
+                        modify_at: true,
+                        is_admin: true,
+                        user: {
+                            select: {
+                                username: true
+                            }
+                        }
+                    },
+                    where: { is_admin: false }
+                });
+
                 total = await prismaClient.user.count({ where: { is_admin: false } });
             }
-
-
-            const users = user.is_root
-                ? allUsers.filter(userElement => userElement.id !== user.id)
-                : allUsers.filter(userElement => userElement.is_admin === false);
 
 
             return {
