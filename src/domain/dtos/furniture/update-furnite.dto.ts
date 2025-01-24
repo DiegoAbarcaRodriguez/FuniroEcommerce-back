@@ -27,7 +27,7 @@ export class UpdateFurnitureDto {
         public category?: string, //Todo Definir enum de categorias
         public price?: number,
         public stock?: number,
-        public created_at?: Date,
+        public modify_at?: Date,
 
         public secondary_material?: string,
         public upholstery_material?: string,
@@ -78,6 +78,8 @@ export class UpdateFurnitureDto {
         if (this.filling_material) object.filling_material = this.filling_material;
         if (this.has_adjustable_headrest) object.has_adjustable_headrest = this.has_adjustable_headrest;
 
+        if (this.modify_at) object.modify_at = this.modify_at;
+
         return object;
     }
 
@@ -107,7 +109,7 @@ export class UpdateFurnitureDto {
             object.category,
             object.price,
             object.stock,
-            object.created_at,
+            object.modify_at,
             object.secondary_material,
             object.upholstery_material,
             object.upholstery_color,

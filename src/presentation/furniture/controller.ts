@@ -17,7 +17,6 @@ export class FurnitureController {
     constructor(private _furnitureService: FurnitureService) { }
 
     createProduct = (req: Request, res: Response) => {
-        console.log(req.body)
         const { user } = req.body;
         const [error, createFurnitureDto] = CreateFurnitureDto.create({
             ...req.body,

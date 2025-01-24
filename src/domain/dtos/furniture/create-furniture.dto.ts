@@ -27,7 +27,7 @@ export class CreateFurnitureDto {
         public category?: string, //Todo Definir enum de categorias
         public price?: number,
         public stock?: number,
-        public created_at?: Date,
+        public modify_at?: Date,
 
         public secondary_material?: string,
         public upholstery_material?: string,
@@ -79,7 +79,7 @@ export class CreateFurnitureDto {
             object.category,
             object.price,
             object.stock,
-            object.created_at,
+            object.modify_at,
             object.secondary_material,
             object.upholstery_material,
             object.upholstery_color,

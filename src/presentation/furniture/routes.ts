@@ -17,7 +17,7 @@ export class FurnitureRoutes {
         router.delete('/:term', AuthMiddleware.validateIsLoggedIn as any, furnitureController.deleteFurniture as any);
 
         //Validators
-        router.get('/byModel/:model', AuthMiddleware.validateIsLoggedIn as any, furnitureController.getFurnitureByModelNumber as any);
+        router.get('/byModel/:model', furnitureController.getFurnitureByModelNumber as any);
         return router;
     }
 }

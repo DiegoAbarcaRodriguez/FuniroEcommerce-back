@@ -40,7 +40,7 @@ export class FurnitureService {
                 },
                 skip: (page - 1) * limit,
                 take: limit,
-                orderBy: { created_at: 'desc' },
+                orderBy: { modify_at: 'desc' },
             });
 
             const total = await prismaClient.furniture.count();
@@ -94,7 +94,7 @@ export class FurnitureService {
         try {
             const { furniture } = await this.getOneFurniture(term);
 
-            await prismaClient.furniture.update({
+            const { name } = await prismaClient.furniture.update({
                 data: updateFurnitureDto.values,
                 where: {
                     id: furniture.id
@@ -103,7 +103,7 @@ export class FurnitureService {
 
             return {
                 ok: true,
-                message: `The furniture with id = ${furniture.id} has been updated`
+                message: `The furniture with name = ${name} has been updated`
             };
 
         } catch (error: any) {
@@ -128,7 +128,7 @@ export class FurnitureService {
 
             return {
                 ok: true,
-                message: `Furniture with id = ${furniture.id} has been eliminated`
+                message: `Furniture with name = ${furniture.name} has been eliminated`
             };
 
         } catch (error) {
@@ -139,7 +139,6 @@ export class FurnitureService {
 
     getFurnitureByModelNumber = async (model: string) => {
         try {
-            console.log(model)
             const furniture = await prismaClient.furniture.findUnique({ where: { model_number: model } });
 
             if (!furniture) throw CustomError.notFound(`The furniture with ${model} does not exists`);
