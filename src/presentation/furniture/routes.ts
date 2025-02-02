@@ -12,6 +12,7 @@ export class FurnitureRoutes {
 
         router.post('/', AuthMiddleware.validateIsLoggedIn as any, furnitureController.createProduct as any);
         router.get('/', furnitureController.getFurnitures as any);
+        router.get('/byQuery', furnitureController.getFurnituresByQuery as any);
         router.get('/:term', furnitureController.getOneFurniture as any);
         router.patch('/:term', AuthMiddleware.validateIsLoggedIn as any, furnitureController.updateFurniture as any);
         router.delete('/:term', AuthMiddleware.validateIsLoggedIn as any, furnitureController.deleteFurniture as any);

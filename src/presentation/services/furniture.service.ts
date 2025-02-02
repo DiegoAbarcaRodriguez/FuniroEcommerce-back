@@ -60,24 +60,19 @@ export class FurnitureService {
     getOneFurniture = async (term: string) => {
 
 
-        const id = !isNaN(+term) ? +term : undefined;
+
 
         try {
 
-            const furniture = id
-                ? await prismaClient.furniture.findUnique({
-                    where: { id }
-                })
-                :
-                await prismaClient.furniture.findUnique({
-                    where: {
-                        name: term
-                    }
-                });
+            const furniture = await prismaClient.furniture.findUnique({
+                where: {
+                    name: term
+                }
+            });
 
 
             if (!furniture) {
-                throw CustomError.notFound(`The furniture with ${id ? id : term} was not found`);
+                throw CustomError.notFound(`The furniture with ${term} was not found`);
             }
 
             return {
@@ -144,6 +139,29 @@ export class FurnitureService {
             if (!furniture) throw CustomError.notFound(`The furniture with ${model} does not exists`);
 
             return { ok: true }
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    getFurnituresByQuery = async (name: string, limit: number) => {
+        try {
+            const furnitures = await prismaClient.furniture.findMany({
+                where: {
+                    name: {
+                        contains: name
+                    }
+                },
+                take: limit
+            });
+
+            if (furnitures.length == 0 || !furnitures) throw CustomError.notFound(`No furniture with the coincidence ${name} does not exists`);
+
+            return {
+                ok: true,
+                furnitures
+            }
 
         } catch (error) {
             throw error;

@@ -90,4 +90,11 @@ export class FurnitureController {
             .catch(error => this.handleError(res, error));
     }
 
+    getFurnituresByQuery = (req: Request, res: Response) => {
+        const { q = '', limit = 0 } = req.query;
+
+        this._furnitureService.getFurnituresByQuery(q?.toString(), +limit)
+            .then(result => res.json(result))
+            .catch(error => this.handleError(res, error));
+    }
 }
