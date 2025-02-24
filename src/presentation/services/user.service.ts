@@ -1,4 +1,4 @@
-import { BcryptjsAdaptor } from '../../config/plugin';
+import { BcryptjsAdaptor, UUIDAdaptor } from '../../config/plugin';
 import { prismaClient } from '../../data/index';
 import { CreateUserDto, PaginationDto, UpdateUserDto } from '../../domain/dtos';
 import { CustomError } from '../../domain/errors/custom.error';
@@ -96,6 +96,7 @@ export class UserService {
 
             const user = await prismaClient.user.create({
                 data: {
+                    id:UUIDAdaptor.generateUUID(),
                     username: createUserDto.username,
                     password: BcryptjsAdaptor.hashPassword(createUserDto.password),
                     modify_by: id,

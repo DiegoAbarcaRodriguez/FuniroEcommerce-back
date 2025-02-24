@@ -2,6 +2,7 @@ import { prismaClient } from "../../data";
 import { CreateOrderDto } from "../../domain/dtos";
 import { CustomError } from "../../domain/errors/custom.error";
 import { ValidateStatusFurnituresDto } from '../../domain/dtos/order/validate-status-furnitures.dto';
+import { UUIDAdaptor } from "../../config/plugin";
 
 
 
@@ -11,6 +12,7 @@ export class OrderService {
     private createOrderFromExistingCustomer = async (tx: any, createOrderDto: CreateOrderDto, existingCustomer: any) => {
         return await tx.order.create({
             data: {
+                id: UUIDAdaptor.generateUUID(),
                 total: createOrderDto.total,
                 status: createOrderDto.status,
                 customer: {
@@ -21,8 +23,10 @@ export class OrderService {
     }
 
     private createOrderFromNewCustomer = async (tx: any, createOrderDto: CreateOrderDto) => {
+        //TODO : Add password into the create and sign JWT
         return await tx.customer.create({
             data: {
+                id: UUIDAdaptor.generateUUID(),
                 first_name: createOrderDto.first_name,
                 last_name: createOrderDto.last_name,
                 company_name: createOrderDto.company_name,
@@ -131,7 +135,7 @@ export class OrderService {
         try {
 
             return prismaClient.$transaction(async (tx) => {
-                const existingCustomer = await tx.customer.findUnique({ where: { email: createOrderDto.email } });
+                const existingCustomer = (await tx.customer.findMany({ where: { email: createOrderDto.email } })).at(0);
 
                 let createdOrder: any;
 
@@ -181,7 +185,7 @@ export class OrderService {
 
             furniture_ids.forEach(async (id, index) => {
                 const furniture = await prismaClient.furniture.findUnique({
-                    where: { id: +id }
+                    where: { id }
                 });
 
                 if (!furniture) {

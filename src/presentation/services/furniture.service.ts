@@ -1,8 +1,9 @@
-import { furniture } from './../../../node_modules/.prisma/client/index.d';
 import { findFurnitureWithUniqueParameters } from '@prisma/client/sql'
 import { prismaClient } from "../../data";
 import { CreateFurnitureDto, PaginationDto, UpdateFurnitureDto } from "../../domain/dtos";
 import { CustomError } from '../../domain/errors/custom.error';
+import { UUIDAdaptor } from '../../config/plugin';
+import { SortByDto } from '../../domain/dtos/shared/sort-by.dto';
 
 
 export class FurnitureService {
@@ -16,7 +17,11 @@ export class FurnitureService {
             if (existingFurniture[0]) throw CustomError.badRequest('There is an existing furniture with either the same name or model_number');
 
             await prismaClient.furniture.create({
-                data: createFurnitureDto
+                data: {
+                    ...createFurnitureDto,
+                    id: UUIDAdaptor.generateUUID()
+
+                }
             });
 
             return {
@@ -30,18 +35,37 @@ export class FurnitureService {
         }
     }
 
-    getFurnitures = async (paginationDto: PaginationDto) => {
+    getFurnitures = async (paginationDto: PaginationDto, sortByDto: SortByDto) => {
         const { limit, page } = paginationDto;
+        const { sortBy } = sortByDto;
 
         try {
-            const furnitures = await prismaClient.furniture.findMany({
-                include: {
-                    user: true
-                },
-                skip: (page - 1) * limit,
-                take: limit,
-                orderBy: { modify_at: 'desc' },
-            });
+
+            const furnitures = sortBy
+                ?
+                await prismaClient.furniture.findMany({
+                    include: {
+                        user: true,
+                        review: true
+                    },
+                    skip: (page - 1) * limit,
+                    take: limit,
+                    orderBy: {
+                        [sortBy]: 'desc'
+                    },
+                })
+                :
+                await prismaClient.furniture.findMany({
+                    include: {
+                        user: true
+                    },
+                    skip: (page - 1) * limit,
+                    take: limit,
+                    orderBy: {
+                        modify_at: 'desc'
+                    },
+                });
+
 
             const total = await prismaClient.furniture.count();
 

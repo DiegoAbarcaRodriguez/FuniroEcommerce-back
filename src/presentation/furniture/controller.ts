@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { FurnitureService } from "../services/furniture.service";
 import { CustomError } from "../../domain/errors/custom.error";
 import { CreateFurnitureDto, PaginationDto, UpdateFurnitureDto } from "../../domain/dtos";
+import { SortByDto } from '../../domain/dtos/shared/sort-by.dto';
 
 export class FurnitureController {
 
@@ -41,14 +42,19 @@ export class FurnitureController {
     }
 
     getFurnitures = (req: Request, res: Response) => {
-        const { limit = 10, page = 1 } = req.query;
+        const { limit = 10, page = 1, sortBy = '' } = req.query;
         const [error, paginationDto] = PaginationDto.create({ limit: +limit, page: +page });
+        const [error2, sortByDto] = SortByDto.create({ sortBy });
 
         if (error) {
             return res.status(400).json({ ok: false, message: error });
         }
 
-        this._furnitureService.getFurnitures(paginationDto!)
+        if (error2) {
+            return res.status(400).json({ ok: false, message: error2 });
+        }
+
+        this._furnitureService.getFurnitures(paginationDto!, sortByDto!)
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }

@@ -1,4 +1,3 @@
-import { objectEnumNames } from "@prisma/client/runtime/library";
 import { UUIDAdaptor } from "../../../config/plugin";
 
 export class CreateFurnitureDto {
@@ -6,7 +5,7 @@ export class CreateFurnitureDto {
         public name: string,
         public description: string,
         public user_fk: string,
-        public image: string,
+        public images: string [],
 
         public sales_package: string,
         public model_number: string,
@@ -42,7 +41,7 @@ export class CreateFurnitureDto {
     static create(object: { [key: string]: any }): [string?, CreateFurnitureDto?] {
         if (!object.name) return ['name is missing'];
         if (!object.description) return ['description is missing'];
-        if (!object.image) return ['image is missing'];
+        if (!object.images || object.images.length === 0) return ['images is missing'];
         if (!object.user_fk) return ['user_fk is missing'];
         if (!UUIDAdaptor.isValidUUID(object.user_fk)) return ['user_fk is not valid'];
 
@@ -64,7 +63,7 @@ export class CreateFurnitureDto {
             object.name,
             object.description,
             object.user_fk,
-            object.image,
+            object.images,
             object.sales_package,
             object.model_number,
             object.height,

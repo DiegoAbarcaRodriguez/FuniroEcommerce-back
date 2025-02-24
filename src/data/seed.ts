@@ -1,4 +1,4 @@
-import { BcryptjsAdaptor, envs } from '../config/plugin';
+import { BcryptjsAdaptor, envs, UUIDAdaptor } from '../config/plugin';
 import { prismaClient } from './index';
 import express, { Request, Response } from 'express';
 
@@ -16,9 +16,11 @@ function seed() {
         try {
             await prismaClient.user.create({
                 data: {
+                    id: UUIDAdaptor.generateUUID(),
                     username: 'admin',
                     password: BcryptjsAdaptor.hashPassword('123456'),
-                    is_admin: true
+                    is_admin: true,
+                    is_root: true
                 }
             });
             res.json({ ok: true });

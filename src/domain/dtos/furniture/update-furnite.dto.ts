@@ -6,7 +6,7 @@ export class UpdateFurnitureDto {
         public name?: string,
         public description?: string,
         public user_fk?: string,
-        public image?: string,
+        public images?: string[],
 
 
         public sales_package?: string,
@@ -79,6 +79,7 @@ export class UpdateFurnitureDto {
         if (this.has_adjustable_headrest) object.has_adjustable_headrest = this.has_adjustable_headrest;
 
         if (this.modify_at) object.modify_at = this.modify_at;
+        if (this.images && this.images?.length > 0) object.images = this.images;
 
         return object;
     }
@@ -94,7 +95,7 @@ export class UpdateFurnitureDto {
             object.name,
             object.description,
             object.user_fk,
-            object.image,
+            object.images,
             object.sales_package,
             object.model_number,
             object.height,
