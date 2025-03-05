@@ -5,3 +5,4 @@ export * from './shared/pagination.dto';
 export * from './furniture/create-furniture.dto';
 export * from './furniture/update-furnite.dto';
 export * from './order/create-order.dto';
+export * from './favorites/create-favorite.dto';

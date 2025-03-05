@@ -9,33 +9,34 @@ datasource db {
 }
 
 model furniture {
-  id                      String            @id @db.Uuid
-  user_fk                 String?           @db.Uuid
-  name                    String            @unique @db.VarChar(30)
-  description             String            @db.VarChar
+  id                      String               @id @db.Uuid
+  user_fk                 String?              @db.Uuid
+  name                    String               @unique @db.VarChar(30)
+  description             String               @db.VarChar
   discount                Float?
-  is_new                  Boolean?          @default(false)
-  category                String?           @db.VarChar(30)
-  price                   Float?            @default(0)
-  stock                   Int?              @default(0)
-  sales_package           String            @db.VarChar(30)
-  model_number            String            @unique @db.VarChar(30)
-  secondary_material      String?           @db.VarChar(30)
-  upholstery_material     String?           @db.VarChar(30)
-  upholstery_color        String?           @db.VarChar(30)
+  is_new                  Boolean?             @default(false)
+  category                String?              @db.VarChar(30)
+  price                   Float?               @default(0)
+  stock                   Int?                 @default(0)
+  sales_package           String               @db.VarChar(30)
+  model_number            String               @unique @db.VarChar(30)
+  secondary_material      String?              @db.VarChar(30)
+  upholstery_material     String?              @db.VarChar(30)
+  upholstery_color        String?              @db.VarChar(30)
   height                  Float
   width                   Float
   depth                   Float?
   weight                  Float
   warranty_domestic       Int
   warranty_general        Int
-  filling_material        String?           @db.VarChar(30)
+  filling_material        String?              @db.VarChar(30)
   has_adjustable_headrest Boolean?
   max_load                Float
-  origin                  String            @db.VarChar(30)
-  modify_at               DateTime?         @default(dbgenerated("'2025-02-17 02:48:11.843308'::timestamp without time zone")) @db.Timestamp(6)
-  images                  String[]          @unique(map: "furniture_image_key") @db.VarChar(72)
-  user                    user?             @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  origin                  String               @db.VarChar(30)
+  modify_at               DateTime?            @default(dbgenerated("'2025-02-17 02:48:11.843308'::timestamp without time zone")) @db.Timestamp(6)
+  images                  String[]             @unique(map: "furniture_image_key") @db.VarChar(72)
+  customer_furniture      customer_furniture[]
+  user                    user?                @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
   order_furniture         order_furniture[]
   review                  review[]
 }
@@ -76,19 +77,20 @@ model user {
 }
 
 model customer {
-  id                     String   @id @db.Uuid
-  first_name             String   @db.VarChar(30)
-  last_name              String   @db.VarChar(50)
-  company_name           String?  @db.VarChar(30)
-  email                  String   @db.VarChar(40)
+  id                     String               @id @db.Uuid
+  first_name             String               @db.VarChar(30)
+  last_name              String               @db.VarChar(50)
+  company_name           String?              @db.VarChar(30)
+  email                  String               @db.VarChar(40)
   phone                  Int
   zip_code               Int
-  country                String?  @db.VarChar(30)
-  city                   String?  @db.VarChar(30)
-  province               String?  @db.VarChar(30)
-  street                 String?  @db.VarChar(30)
+  country                String?              @db.VarChar(30)
+  city                   String?              @db.VarChar(30)
+  province               String?              @db.VarChar(30)
+  street                 String?              @db.VarChar(30)
   additional_information String?
-  password               String   @db.VarChar(72)
+  password               String               @db.VarChar(72)
+  customer_furniture     customer_furniture[]
   order                  order[]
   review                 review[]
 }
@@ -100,6 +102,14 @@ model review {
   furniture_fk String?    @db.Uuid
   comment      String
   customer     customer?  @relation(fields: [customer_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_customer")
+  furniture    furniture? @relation(fields: [furniture_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model customer_furniture {
+  id           Int        @id @default(autoincrement())
+  customer_fk  String?    @db.Uuid
+  furniture_fk String?    @db.Uuid
+  customer     customer?  @relation(fields: [customer_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
   furniture    furniture? @relation(fields: [furniture_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
