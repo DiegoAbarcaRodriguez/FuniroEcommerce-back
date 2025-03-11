@@ -6,6 +6,7 @@ import { OrderRoutes } from './order/routes';
 import { ReviewRoutes } from './review/routes';
 import { FavoriteRoutes } from './favorite/routes';
 import { CustomerRoutes } from './customer/routes';
+import { CPRoutes } from './cp/routes';
 
 
 export class AppRoutes {
@@ -24,6 +25,7 @@ export class AppRoutes {
     router.use('/api/review', ReviewRoutes.routes);
     router.use('/api/favorites', FavoriteRoutes.routes);
     router.use('/api/customer', CustomerRoutes.routes);
+    router.use('/api/cp', CPRoutes.routes);
 
 
 
