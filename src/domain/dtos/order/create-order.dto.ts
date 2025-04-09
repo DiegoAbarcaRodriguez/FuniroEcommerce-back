@@ -24,6 +24,7 @@ export class CreateOrderDto {
         public quantity: string[],
 
         //Customer
+        public password: string,
         public company_name?: string,
         public additional_information?: string
 
@@ -33,7 +34,7 @@ export class CreateOrderDto {
     ) { }
 
     static create(object: { [key: string]: any }): [string?, CreateOrderDto?] {
-        const { first_name, last_name, email, phone, zip_code, street, country, city, province, company_name, additional_information, total, status, furniture_id, quantity, stocks } = object;
+        const { first_name, last_name, email, phone, zip_code, street, country, city, province, company_name, additional_information, total, status, furniture_id, quantity, stocks, password, password2 } = object;
 
         //Customer
         if (!first_name) return ['first_name is required'];
@@ -71,7 +72,11 @@ export class CreateOrderDto {
         if (furniture_id.length !== quantity.length) return ['the length of furniture_id array is different than quantity array'];
         if (!quantity) return ['quantity is required'];
 
+        if (!password) return ['Password is required'];
+        if (password.length < 6) return ['Password is invalid'];
+        if (password !== password2) return ['The passwords are diferents'];
 
-        return [undefined, new CreateOrderDto(first_name, last_name, email, +phone, +zip_code, street, country, city, province, +total, status, furniture_id, quantity, company_name, additional_information)];
+
+        return [undefined, new CreateOrderDto(first_name, last_name, email, +phone, +zip_code, street, country, city, province, +total, status, furniture_id, quantity, password, company_name, additional_information)];
     }
 }

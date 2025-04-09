@@ -82,7 +82,7 @@ model customer {
   last_name              String               @db.VarChar(50)
   company_name           String?              @db.VarChar(30)
   email                  String               @db.VarChar(40)
-  phone                  Int
+  phone                  BigInt
   zip_code               Int
   country                String?              @db.VarChar(30)
   city                   String?              @db.VarChar(30)

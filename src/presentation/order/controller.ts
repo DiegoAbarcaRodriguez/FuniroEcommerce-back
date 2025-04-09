@@ -19,12 +19,15 @@ export class OrderController {
     createOrder = (req: Request, res: Response) => {
 
         const [error, createOrderDto] = CreateOrderDto.create(req.body);
+        const { session_id } = req.body;
+
+        if (!session_id) return res.status(400).json({ ok: false, message: 'The session_id is missing' });
 
         if (error) {
             return res.status(400).json({ ok: false, message: error });
         }
 
-        this.orderService.createOrder(createOrderDto!)
+        this.orderService.createOrder(createOrderDto!, session_id!)
             .then(result => res.status(201).json(result))
             .catch(error => this.handleError(res, error));
     }
@@ -42,4 +45,18 @@ export class OrderController {
             .then(result => res.json(result))
             .catch(error => this.handleError(res, error));
     }
+
+    executePayment = (req: Request, res: Response) => {
+
+        const [error, createOrderDto] = CreateOrderDto.create(req.body);
+
+        if (error) {
+            return res.status(400).json({ ok: false, message: error });
+        }
+
+        this.orderService.executePayment(createOrderDto!)
+            .then(result => res.json(result))
+            .catch(error => this.handleError(res, error));
+    }
+
 }

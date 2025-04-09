@@ -6,7 +6,7 @@ export class JWTAdaptador {
     static async generateToken(payload: any, duration: string = '2h') {
         return new Promise((resolve) => {
             jwt.sign(payload, envs.JWT_SEED, { expiresIn: duration }, (error, token) => {
-
+                console.log(error)
                 if (error) return resolve(null);
 
                 resolve(token);
