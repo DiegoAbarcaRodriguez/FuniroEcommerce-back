@@ -90,6 +90,7 @@ model customer {
   street                 String?              @db.VarChar(30)
   additional_information String?
   password               String               @db.VarChar(72)
+  token                  String?              @db.VarChar
   customer_furniture     customer_furniture[]
   order                  order[]
   review                 review[]

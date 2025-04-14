@@ -6,3 +6,5 @@ export * from './furniture/create-furniture.dto';
 export * from './furniture/update-furnite.dto';
 export * from './order/create-order.dto';
 export * from './favorites/create-favorite.dto';
+export * from './customer/login-customer.dto';
+export * from './customer/update-password.dto';

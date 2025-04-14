@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { JWTAdaptador, UUIDAdaptor } from "../../config/plugin";
+import { JWTAdaptador } from "../../config/plugin";
 import { prismaClient } from "../../data";
 
 export class CustomerAuthMiddleware {
@@ -13,17 +13,16 @@ export class CustomerAuthMiddleware {
         const token = authorization!.split(' ').at(1) || '';
 
         try {
-            const payload = await JWTAdaptador.validateToken<{ id: string }>(token);
+            const payload = await JWTAdaptador.validateToken<{ email: string }>(token);
             if (!payload) return res.status(401).json({ ok: false, message: 'Token not valid' });
-            if (!UUIDAdaptor.isValidUUID(payload!.id)) return res.status(401).json({ ok: false, message: 'Token not valid - payload' });
 
-            const user = await prismaClient.user.findUnique({
-                where: { id: payload!.id }
+            const customer = await prismaClient.customer.findFirst({
+                where: { email: payload!.email }
             });
 
-            if (!user) return res.status(401).json({ ok: false, message: 'Token not valid - user' });
+            if (!customer) return res.status(401).json({ ok: false, message: 'Token not valid - customer' });
 
-            req.body.user = user;
+            req.body.customer = customer;
             next();
         } catch (error) {
             console.log(error);

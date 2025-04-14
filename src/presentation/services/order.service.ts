@@ -126,7 +126,7 @@ export class OrderService {
                 try {
                     await tx.order_furniture.create({
                         data: {
-                            furniture_fk: +id,
+                            furniture_fk: id,
                             order_fk: existingCustomer ? createdOrder.id : createdOrder.order[0].id,
                             quantity: +createOrderDto.quantity[index]
                         }

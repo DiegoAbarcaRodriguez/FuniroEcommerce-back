@@ -8,6 +8,7 @@ export const envs = {
   WEBSERVICE_URL: get('WEBSERVICE_URL').required().asString(),
   API_KEY: get('API_KEY').required().asString(),
   STRIPE_KEY: get('STRIPE_KEY').required().asString(),
+  FRONT_URL: get('FRONT_URL').required().asString(),
 
   MAILER_SERVICE: get('MAILER_SERVICE').required().asString(),
   MAILER_EMAIL: get('MAILER_EMAIL').required().asString(),
