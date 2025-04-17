@@ -2,6 +2,7 @@ import { Router } from "express";
 import { FurnitureController } from "./controller";
 import { AuthMiddleware } from "../middlewares/auth.middleware";
 import { FurnitureService } from "../services/furniture.service";
+import { CustomerAuthMiddleware } from "../middlewares/customer-auth.middleware";
 
 export class FurnitureRoutes {
     static get routes() {
@@ -11,6 +12,8 @@ export class FurnitureRoutes {
         const furnitureController = new FurnitureController(productService);
 
         router.post('/', AuthMiddleware.validateIsLoggedIn as any, furnitureController.createProduct as any);
+        router.post('/mark-favorite', CustomerAuthMiddleware.validateIsLoggedIn as any, furnitureController.markFurnitureAsFavorite as any);
+        router.get('/favorites', CustomerAuthMiddleware.validateIsLoggedIn as any, furnitureController.getFavoriteFurnitures as any);
         router.get('/', furnitureController.getFurnitures as any);
         router.get('/byQuery', furnitureController.getFurnituresByQuery as any);
         router.get('/:term', furnitureController.getOneFurniture as any);

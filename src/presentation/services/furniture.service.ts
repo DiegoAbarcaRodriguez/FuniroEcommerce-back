@@ -192,4 +192,79 @@ export class FurnitureService {
         }
     }
 
+    markFurnitureAsFavorite = async (furniture_id: string, customer_id: string) => {
+        try {
+            const existingFurniture = await prismaClient.furniture.findUnique({ where: { id: furniture_id } });
+            if (!existingFurniture) throw CustomError.notFound('The furniture was not found');
+
+            const existingCustomer = await prismaClient.customer.findUnique({ where: { id: customer_id } });
+            if (!existingCustomer) throw CustomError.notFound('The customer was not found');
+
+            const existingCustomerFurniture = await prismaClient.customer_furniture.findFirst(
+                {
+                    where: {
+                        customer_fk: customer_id,
+                        furniture_fk: furniture_id
+                    }
+                });
+
+            let markedAsFavorite;
+
+            if (existingCustomerFurniture) {
+
+                markedAsFavorite = await prismaClient.customer_furniture.delete({
+                    where: {
+                        id: +existingCustomerFurniture.id
+                    }
+                });
+
+            } else {
+                markedAsFavorite = await prismaClient.customer_furniture.create(
+                    {
+                        data:
+                        {
+                            customer_fk: customer_id,
+                            furniture_fk: furniture_id
+                        }
+                    });
+
+            }
+
+
+            if (!markedAsFavorite) throw CustomError.internalServer('Encountered an error marking as favorite to the furniture');
+
+
+            return {
+                ok: true,
+                message: `The furnitures was ${existingCustomerFurniture ? 'unmarked' : 'marked'} as favorite succesfully`
+            };
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    getFavoriteFurnitures = async (customer_id: string) => {
+        try {
+
+            const furnitures = await prismaClient.customer_furniture.findMany(
+                {
+                    where: { customer_fk: customer_id },
+                    include: {
+                        furniture: true
+                    }
+                });
+
+            const furnituresData = furnitures.map(furniture => furniture.furniture);
+
+            return {
+                ok: true,
+                furnitures: furnituresData
+            }
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }

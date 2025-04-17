@@ -3,6 +3,7 @@ import { FurnitureService } from "../services/furniture.service";
 import { CustomError } from "../../domain/errors/custom.error";
 import { CreateFurnitureDto, PaginationDto, UpdateFurnitureDto } from "../../domain/dtos";
 import { SortByDto } from '../../domain/dtos/shared/sort-by.dto';
+import { UUIDAdaptor } from "../../config/plugin";
 
 export class FurnitureController {
 
@@ -11,6 +12,7 @@ export class FurnitureController {
             return res.status(error.statusCode).json({ ok: false, message: error.message });
         }
 
+        console.log(error)
         return res.status(500).json({ ok: false, message: 'Internal error server' });
     }
 
@@ -101,6 +103,26 @@ export class FurnitureController {
 
         this._furnitureService.getFurnituresByQuery(q?.toString(), +limit)
             .then(result => res.json(result))
+            .catch(error => this.handleError(res, error));
+    }
+
+    markFurnitureAsFavorite = (req: Request, res: Response) => {
+
+        const { furniture_id, customer } = req.body;
+
+        if (!UUIDAdaptor.isValidUUID(furniture_id)) return res.status(400).json({ ok: false, message: 'The furniture_id is not valid' });
+        if (!UUIDAdaptor.isValidUUID(customer.id)) return res.status(400).json({ ok: false, message: 'The customer_id is not valid' });
+
+        this._furnitureService.markFurnitureAsFavorite(furniture_id, customer.id)
+            .then(resp => res.json(resp))
+            .catch(error => this.handleError(res, error));
+    }
+
+    getFavoriteFurnitures = (req: Request, res: Response) => {
+        const { customer } = req.body;
+
+        this._furnitureService.getFavoriteFurnitures(customer.id)
+            .then(resp => res.json(resp))
             .catch(error => this.handleError(res, error));
     }
 }
