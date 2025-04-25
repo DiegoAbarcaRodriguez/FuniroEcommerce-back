@@ -5,7 +5,7 @@ export class PaginationDto {
     ) { }
 
     static create = (object: { [key: string]: any }): [string?, PaginationDto?] => {
-        const { page = 1, limit = 10 } = object;
+        const { page = 1, limit = 5 } = object;
 
         if (isNaN(+page) || isNaN(+limit)) {
             return ['Page and limit must be numbers'];

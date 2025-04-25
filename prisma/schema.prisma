@@ -102,6 +102,8 @@ model review {
   customer_fk  String?    @db.Uuid
   furniture_fk String?    @db.Uuid
   comment      String
+  title        String?
+  created_at   DateTime?  @db.Timestamp(6)
   customer     customer?  @relation(fields: [customer_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_review_customer")
   furniture    furniture? @relation(fields: [furniture_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

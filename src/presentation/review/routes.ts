@@ -10,6 +10,7 @@ export class ReviewRoutes {
 
         const router = Router();
 
+        router.get('/total-average/:id', reviewController.getTotalAndAverage as any);
         router.get('/:id', reviewController.getReviewsByFurnitureId as any);
         router.post('/', reviewController.createReview as any);
         return router;

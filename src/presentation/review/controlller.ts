@@ -3,6 +3,7 @@ import { ReviewService } from "../services/review.service";
 import { CustomError } from "../../domain/errors/custom.error";
 import { UUIDAdaptor } from "../../config/plugin";
 import { CreateReviewDto } from "../../domain/dtos/review/create-review.dto";
+import { PaginationDto } from "../../domain/dtos";
 
 export class ReviewController {
 
@@ -10,6 +11,8 @@ export class ReviewController {
         if (error instanceof CustomError) {
             return res.status(error.statusCode).json({ ok: false, message: error.message });
         }
+
+        console.log(error);
 
         return res.status(500).json({ ok: false, message: 'Internal error server' });
     }
@@ -19,11 +22,14 @@ export class ReviewController {
     getReviewsByFurnitureId = (req: Request, res: Response) => {
 
         const { id } = req.params;
+        const [error, paginationDto] = PaginationDto.create(req.query);
+
+        if (error) return res.status(400).json({ ok: false, message: error });
 
         if (!UUIDAdaptor.isValidUUID(id) || !id) return res.status(400).json({ ok: false, message: 'The furniture id provided is not valid' })
 
 
-        this._reviewService.getReviewByFurnitureId(id)
+        this._reviewService.getReviewByFurnitureId(id, paginationDto!)
             .then(resp => res.json(resp))
             .catch(error => this.handleError(res, error));
     }
@@ -37,5 +43,16 @@ export class ReviewController {
             .then(resp => res.json(resp))
             .catch(error => this.handleError(res, error));
 
+    }
+
+    getTotalAndAverage = (req: Request, res: Response) => {
+
+        const { id } = req.params;
+
+        if (!UUIDAdaptor.isValidUUID(id)) return res.status(400).json({ ok: false, message: 'The furniture id provided is not valid' });
+
+        this._reviewService.getTotalAndAverage(id)
+            .then((resp) => res.json(resp))
+            .catch(error => this.handleError(res, error));
     }
 }

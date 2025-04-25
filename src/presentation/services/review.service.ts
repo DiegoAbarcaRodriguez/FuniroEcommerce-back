@@ -1,25 +1,32 @@
 import { UUIDAdaptor } from "../../config/plugin";
 import { prismaClient } from "../../data";
+import { PaginationDto } from "../../domain/dtos";
 import { CreateReviewDto } from "../../domain/dtos/review/create-review.dto";
 import { CustomError } from "../../domain/errors/custom.error"
 
 export class ReviewService {
     constructor() { }
 
-    getReviewByFurnitureId = async (furnitureId: string) => {
+    getReviewByFurnitureId = async (furnitureId: string, paginationDto: PaginationDto) => {
+
+        const { limit, page } = paginationDto;
+
         try {
             const reviews = await prismaClient.review.findMany({
                 where: {
                     furniture_fk: furnitureId
                 },
-                select: {
+                skip: (page - 1) * limit,
+                take: limit,
+                orderBy: { created_at: 'desc' },
+                include: {
                     customer: {
                         select: {
                             first_name: true,
                             last_name: true
                         }
                     }
-                }
+                },
             });
 
             if (reviews.length === 0) throw CustomError.notFound('There are not reviews for that furniture yet');
@@ -38,19 +45,35 @@ export class ReviewService {
 
             const existingReview = await prismaClient.review.findFirst({
                 where: {
-                    customer_fk: createReviewDto.customer_fk,
-                    furniture_fk: createReviewDto.furniture_fk,
+                    customer_fk: createReviewDto.customer_id,
+                    furniture_fk: createReviewDto.furniture_id,
                 }
             });
 
             if (existingReview) throw CustomError.badRequest('you have already made a review on that product');
 
+            const { customer_id, furniture_id, ...reviewPayload } = createReviewDto;
+
             const review = await prismaClient.review.create({
                 data: {
                     id: UUIDAdaptor.generateUUID(),
-                    ...createReviewDto
-                }
+                    created_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6)),
+                    ...reviewPayload,
+                    customer: { connect: { id: customer_id } },
+                    furniture: { connect: { id: furniture_id } },
+                },
+                include: {
+                    customer: {
+                        select: {
+                            first_name: true,
+                            last_name: true
+                        }
+                    },
+                },
+
             });
+
+            console.log(review)
 
             return {
                 ok: true,
@@ -60,5 +83,36 @@ export class ReviewService {
         } catch (error) {
             throw error;
         }
+    }
+
+
+    getTotalAndAverage = async (id: string) => {
+        try {
+            const average = await prismaClient.review.aggregate({
+                _avg: {
+                    grade: true
+                },
+                where: { furniture_fk: id }
+            });
+
+            const total = await prismaClient.review.count({
+                where: {
+                    furniture_fk: id
+                }
+            });
+
+            return {
+                ok: true,
+                total,
+                average
+            }
+
+
+        } catch (error) {
+            throw error;
+        }
+
+
+
     }
 }
