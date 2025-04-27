@@ -14,6 +14,7 @@ export class FurnitureRoutes {
         router.post('/', AuthMiddleware.validateIsLoggedIn as any, furnitureController.createProduct as any);
         router.post('/mark-favorite', CustomerAuthMiddleware.validateIsLoggedIn as any, furnitureController.markFurnitureAsFavorite as any);
         router.get('/favorites', CustomerAuthMiddleware.validateIsLoggedIn as any, furnitureController.getFavoriteFurnitures as any);
+        router.get('/purchased-furnitures', CustomerAuthMiddleware.validateIsLoggedIn as any, furnitureController.getFurnituresPurchased as any);
         router.get('/', furnitureController.getFurnitures as any);
         router.get('/byQuery', furnitureController.getFurnituresByQuery as any);
         router.get('/:term', furnitureController.getOneFurniture as any);

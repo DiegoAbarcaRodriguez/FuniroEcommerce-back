@@ -125,4 +125,12 @@ export class FurnitureController {
             .then(resp => res.json(resp))
             .catch(error => this.handleError(res, error));
     }
+
+    getFurnituresPurchased = (req: Request, res: Response) => {
+        const { customer } = req.body;
+
+        this._furnitureService.getFurnituresPurchased(customer.id)
+            .then(resp => res.json(resp))
+            .catch(error => this.handleError(res, error));
+    }
 }

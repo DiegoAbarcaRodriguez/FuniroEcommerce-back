@@ -4,6 +4,7 @@ import { CreateFurnitureDto, PaginationDto, UpdateFurnitureDto } from "../../dom
 import { CustomError } from '../../domain/errors/custom.error';
 import { UUIDAdaptor } from '../../config/plugin';
 import { SortByDto } from '../../domain/dtos/shared/sort-by.dto';
+import { order_furniture } from '@prisma/client';
 
 
 export class FurnitureService {
@@ -267,4 +268,38 @@ export class FurnitureService {
         }
     }
 
+    getFurnituresPurchased = async (customer_id: string) => {
+        try {
+
+            const orders = await prismaClient.order.findMany(
+                {
+                    where: {
+                        customer_fk: customer_id
+                    }
+                });
+
+            if (orders.length === 0) throw CustomError.notFound('There is no orders executed yet!');
+
+            let orderFurnitureRequests: Promise<order_furniture[]>[] = []
+
+            orders.forEach(order => {
+                orderFurnitureRequests.push(prismaClient.order_furniture.findMany({
+                    where: { order_fk: order.id },
+                    include: {
+                        furniture: true
+                    }
+                }));
+            });
+
+            const orderFurnitureResponds = await Promise.all(orderFurnitureRequests);
+
+
+            return {
+                ok: true,
+                furnitures: orderFurnitureResponds
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
 }
