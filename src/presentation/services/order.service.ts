@@ -513,5 +513,24 @@ src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAhCAYAAACbffiEAAAACXBIW
 
     }
 
+    getOrdersByCustomer = async (customer_id: string) => {
+        try {
+
+            const orders = await prismaClient.order.findMany(
+                {
+                    where: {
+                        customer_fk: customer_id
+                    }
+                });
+
+            return {
+                ok: true,
+                orders
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
 }

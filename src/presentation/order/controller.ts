@@ -59,4 +59,11 @@ export class OrderController {
             .catch(error => this.handleError(res, error));
     }
 
+    getOrdersByCustomer = (req: Request, res: Response) => {
+        const { customer } = req.body;
+
+        this.orderService.getOrdersByCustomer(customer.id)
+            .then(resp => res.json(resp))
+            .catch(error => this.handleError(res, error));
+    }
 }

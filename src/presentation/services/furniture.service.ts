@@ -268,36 +268,30 @@ export class FurnitureService {
         }
     }
 
-    getFurnituresPurchased = async (customer_id: string) => {
+    getFurnituresByOrder = async (order_id: string) => {
         try {
 
-            const orders = await prismaClient.order.findMany(
+
+
+            const ordersFurniture = await prismaClient.order_furniture.findMany(
                 {
                     where: {
-                        customer_fk: customer_id
-                    }
-                });
-
-            if (orders.length === 0) throw CustomError.notFound('There is no orders executed yet!');
-
-            let orderFurnitureRequests: Promise<order_furniture[]>[] = []
-
-            orders.forEach(order => {
-                orderFurnitureRequests.push(prismaClient.order_furniture.findMany({
-                    where: { order_fk: order.id },
+                        order_fk: order_id
+                    },
                     include: {
                         furniture: true
                     }
-                }));
-            });
+                });
 
-            const orderFurnitureResponds = await Promise.all(orderFurnitureRequests);
+            const furnitures = ordersFurniture.map(orderFurniture => orderFurniture.furniture);
+
 
 
             return {
                 ok: true,
-                furnitures: orderFurnitureResponds
+                furnitures
             }
+            
         } catch (error) {
             throw error;
         }

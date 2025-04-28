@@ -126,10 +126,12 @@ export class FurnitureController {
             .catch(error => this.handleError(res, error));
     }
 
-    getFurnituresPurchased = (req: Request, res: Response) => {
-        const { customer } = req.body;
+    getFurnituresByOrder = (req: Request, res: Response) => {
+        const { id } = req.params;
 
-        this._furnitureService.getFurnituresPurchased(customer.id)
+        if (!UUIDAdaptor.isValidUUID(id)) return res.status(400).json({ ok: false, message: 'The order id is not valid' });
+
+        this._furnitureService.getFurnituresByOrder(id)
             .then(resp => res.json(resp))
             .catch(error => this.handleError(res, error));
     }
