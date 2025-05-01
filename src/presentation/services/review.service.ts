@@ -115,4 +115,56 @@ export class ReviewService {
 
 
     }
+
+    updateReview = async (review_id: string, updateReviewDto: CreateReviewDto) => {
+        try {
+            const existingReview = await prismaClient.review.findFirst(
+                {
+                    where:
+                        { id: review_id }
+                });
+
+            if (!existingReview) throw CustomError.notFound('Review not found');
+
+            const { furniture_id, customer_id, ...body } = updateReviewDto;
+
+            const updatedReview = await prismaClient.review.update(
+                {
+                    where: {
+                        id: review_id
+                    },
+                    data: {
+                        ...body,
+                        created_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6))
+                    }
+                }
+            );
+
+            return {
+                ok: true,
+                review: updatedReview
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    deleteReview = async (review_id: string) => {
+        try {
+            const deletedReview = await prismaClient.review.delete(
+                {
+                    where: {
+                        id: review_id
+                    }
+                });
+
+            return {
+                ok: true,
+                review: deletedReview
+            };
+
+        } catch (error) {
+            throw error;
+        }
+    }
 }

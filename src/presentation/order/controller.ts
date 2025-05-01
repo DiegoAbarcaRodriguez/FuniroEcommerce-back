@@ -3,6 +3,7 @@ import { CustomError } from "../../domain/errors/custom.error";
 import { OrderService } from "../services/order.service";
 import { CreateOrderDto } from "../../domain/dtos";
 import { ValidateStatusFurnituresDto } from '../../domain/dtos/order/validate-status-furnitures.dto';
+import { UUIDAdaptor } from "../../config/plugin";
 
 export class OrderController {
     constructor(private orderService: OrderService) { }
@@ -63,6 +64,17 @@ export class OrderController {
         const { customer } = req.body;
 
         this.orderService.getOrdersByCustomer(customer.id)
+            .then(resp => res.json(resp))
+            .catch(error => this.handleError(res, error));
+    }
+
+    getOrderById = (req: Request, res: Response) => {
+        const { id } = req.params;
+
+
+        if (!UUIDAdaptor.isValidUUID(id)) return res.status(400).json({ ok: false, message: 'The order id is not valid' });
+
+        this.orderService.getOrderById(id)
             .then(resp => res.json(resp))
             .catch(error => this.handleError(res, error));
     }

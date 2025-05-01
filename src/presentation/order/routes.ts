@@ -15,6 +15,7 @@ export class OrderRoutes {
         const router = Router();
 
         router.get('/get-orders', CustomerAuthMiddleware.validateIsLoggedIn as any, orderController.getOrdersByCustomer as any);
+        router.get('/:id', CustomerAuthMiddleware.validateIsLoggedIn as any, orderController.getOrderById as any);
         router.post('/', orderController.createOrder as any);
         router.post('/execute-payment', orderController.executePayment as any);
         router.post('/validate-furnitures', orderController.validateFurnitures as any);

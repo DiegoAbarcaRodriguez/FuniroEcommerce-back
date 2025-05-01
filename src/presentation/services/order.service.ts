@@ -532,5 +532,41 @@ src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAhCAYAAACbffiEAAAACXBIW
         }
     }
 
+    getOrderById = async (order_id: string) => {
+        try {
+            const order = await prismaClient.order.findFirst(
+                {
+                    where: { id: order_id },
+                    include: {
+                        customer: true
+                    }
+                });
+
+
+
+            if (!order) throw CustomError.notFound('Order not found');
+
+            const furnitures = await prismaClient.order_furniture.findMany(
+                {
+                    where: { order_fk: order.id },
+                    include: {
+                        furniture: true
+                    }
+                });
+
+
+            if (furnitures.length === 0 || !furnitures) throw CustomError.notFound('Furnitures were not found');
+
+            return {
+                ok: true,
+                order,
+                furnitures
+
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
+
 
 }

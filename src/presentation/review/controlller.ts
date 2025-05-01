@@ -55,4 +55,27 @@ export class ReviewController {
             .then((resp) => res.json(resp))
             .catch(error => this.handleError(res, error));
     }
+
+    updateReview = (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        const [error, createReviewDto] = CreateReviewDto.create(req.body);
+
+        if (error) return res.status(400).json({ ok: false, message: error });
+        if (!UUIDAdaptor.isValidUUID) return res.status(400).json({ ok: false, message: 'The review id is not valid' });
+
+        this._reviewService.updateReview(id, createReviewDto!)
+            .then(resp => res.json(resp))
+            .catch(error => this.handleError(res, error));
+    }
+
+    deleteReview = (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        if (!UUIDAdaptor.isValidUUID(id)) return res.status(400).json({ ok: false, message: 'The review id is not valid' });
+
+        this._reviewService.deleteReview(id)
+            .then(resp => res.json(resp))
+            .catch(error => this.handleError(res, error));
+    }
 }
