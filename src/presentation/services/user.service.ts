@@ -13,52 +13,29 @@ export class UserService {
                 throw CustomError.fobidden('You do not have the privilege to consult that information');
             }
 
-            let users = [];
-            let total: number = 0;
 
-            if (user.is_root) {
-                users = await prismaClient.user.findMany({
-                    take: paginationDto.limit,
-                    skip: (paginationDto.page - 1) * paginationDto.limit,
-                    orderBy: {
-                        modify_at: 'desc'
-                    },
-                    select: {
-                        id: true,
-                        username: true,
-                        modify_at: true,
-                        is_admin: true,
-                        user: {
-                            select: {
-                                username: true
-                            }
+            const users = await prismaClient.user.findMany({
+                take: paginationDto.limit,
+                skip: (paginationDto.page - 1) * paginationDto.limit,
+                orderBy: {
+                    modify_at: 'desc'
+                },
+                select: {
+                    id: true,
+                    username: true,
+                    modify_at: true,
+                    is_admin: true,
+                    user: {
+                        select: {
+                            username: true
                         }
                     }
-                });
-                total = await prismaClient.user.count();
-            } else {
-                users = await prismaClient.user.findMany({
-                    take: paginationDto.limit,
-                    skip: (paginationDto.page - 1) * paginationDto.limit,
-                    orderBy: {
-                        modify_at: 'desc'
-                    },
-                    select: {
-                        id: true,
-                        username: true,
-                        modify_at: true,
-                        is_admin: true,
-                        user: {
-                            select: {
-                                username: true
-                            }
-                        }
-                    },
-                    where: { is_admin: false }
-                });
+                },
+                where: { is_admin: false }
+            });
 
-                total = await prismaClient.user.count({ where: { is_admin: false } });
-            }
+            const total = await prismaClient.user.count({ where: { is_admin: false } });
+
 
 
             return {
@@ -67,10 +44,7 @@ export class UserService {
             };
 
 
-            //todo Complementar objeto con las rutas siguientes de la paginacion y numero total de registros
-
         } catch (error) {
-            console.log(error);
             throw error;
         }
 
@@ -96,11 +70,12 @@ export class UserService {
 
             const user = await prismaClient.user.create({
                 data: {
-                    id:UUIDAdaptor.generateUUID(),
+                    id: UUIDAdaptor.generateUUID(),
                     username: createUserDto.username,
                     password: BcryptjsAdaptor.hashPassword(createUserDto.password),
                     modify_by: id,
-                    is_admin: true
+                    is_admin: false,
+                    modify_at:new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6))
                 },
                 select: {
                     id: true,
@@ -123,7 +98,6 @@ export class UserService {
 
 
         } catch (error) {
-            console.log(error);
             throw error;
         }
     }
@@ -146,7 +120,7 @@ export class UserService {
             });
 
             if (!existingUser) throw CustomError.notFound('User not found');
-            if (existingUser.is_root) throw CustomError.fobidden('You cannot modify a root account');
+            if (existingUser.is_admin) throw CustomError.fobidden('You cannot modify an admin account');
 
             if (Object.keys(updateUserDto.values).length === 0) throw CustomError.badRequest('The payload cannot be void');
             if (updateUserDto.password) updateUserDto.password = BcryptjsAdaptor.hashPassword(updateUserDto.password);
@@ -159,7 +133,7 @@ export class UserService {
                 data: {
                     ...updateUserDto.values,
                     modify_by: idWhoseModifys,
-                    modify_at: new Date()
+                    modify_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6))
                 },
                 select: {
                     id: true,
@@ -182,7 +156,6 @@ export class UserService {
 
 
         } catch (error) {
-            console.log(error);
             throw error;
         }
     }
@@ -201,7 +174,7 @@ export class UserService {
             });
 
             if (!existingUser) throw CustomError.notFound('User not found');
-            if (existingUser.is_root) throw CustomError.fobidden('You cannot delete a root account');
+            if (existingUser.is_admin) throw CustomError.fobidden('You cannot delete an admin account');
 
             const deletedUser = await prismaClient.user.delete({
                 where: { id: idToDelete }
@@ -215,7 +188,6 @@ export class UserService {
 
 
         } catch (error) {
-            console.log(error);
             throw error;
         }
     }

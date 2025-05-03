@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Server = void 0;
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
+const cors_1 = __importDefault(require("cors"));
 class Server {
     constructor(options) {
         this.app = (0, express_1.default)();
@@ -18,6 +19,7 @@ class Server {
         //* Middlewares
         this.app.use(express_1.default.json()); // raw
         this.app.use(express_1.default.urlencoded({ extended: true })); // x-www-form-urlencoded
+        this.app.use((0, cors_1.default)());
         //* Public Folder
         this.app.use(express_1.default.static(this.publicPath));
         //* Routes

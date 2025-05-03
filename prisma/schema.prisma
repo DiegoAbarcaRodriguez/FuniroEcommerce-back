@@ -48,6 +48,7 @@ model order {
   customer_fk     String?           @db.Uuid
   user_fk         String?           @db.Uuid
   created_at      DateTime?         @default(dbgenerated("'2025-02-17 02:48:11.916564'::timestamp without time zone")) @db.Timestamp(6)
+  modify_at       DateTime?         @db.Timestamp(6)
   customer        customer?         @relation(fields: [customer_fk], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user            user?             @relation(fields: [user_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_user_fk_fkey1")
   order_furniture order_furniture[]

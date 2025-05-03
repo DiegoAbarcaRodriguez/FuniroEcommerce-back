@@ -4,6 +4,7 @@ import { OrderController } from "./controller";
 import { EmailService } from "../services/email.service";
 import { envs } from "../../config/plugin";
 import { CustomerAuthMiddleware } from "../middlewares/customer-auth.middleware";
+import { AuthMiddleware } from "../middlewares/auth.middleware";
 
 export class OrderRoutes {
     static get routes() {
@@ -15,6 +16,9 @@ export class OrderRoutes {
         const router = Router();
 
         router.get('/get-orders', CustomerAuthMiddleware.validateIsLoggedIn as any, orderController.getOrdersByCustomer as any);
+        router.get('/get-all-orders', AuthMiddleware.validateIsLoggedIn as any, orderController.getAllOrders as any);
+        router.get('/get-order/:query', AuthMiddleware.validateIsLoggedIn as any, orderController.getFilterOrderByCustomer as any);
+        router.patch('/update-status/:id', AuthMiddleware.validateIsLoggedIn as any, orderController.updateStatusOrder as any);
         router.get('/:id', CustomerAuthMiddleware.validateIsLoggedIn as any, orderController.getOrderById as any);
         router.post('/', orderController.createOrder as any);
         router.post('/execute-payment', orderController.executePayment as any);

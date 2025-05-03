@@ -1,15 +1,16 @@
 import { prismaClient } from "../../data";
-import { CreateOrderDto } from "../../domain/dtos";
+import { CreateOrderDto, PaginationDto, UpdateStatusDto } from "../../domain/dtos";
 import { CustomError } from "../../domain/errors/custom.error";
 import { ValidateStatusFurnituresDto } from '../../domain/dtos/order/validate-status-furnitures.dto';
 import { BcryptjsAdaptor, envs, JWTAdaptador, UUIDAdaptor } from "../../config/plugin";
 import Stripe from "stripe";
 import { EmailService } from "./email.service";
 import puppeteer from "puppeteer";
-import { furniture } from "@prisma/client";
+import { furniture, order_status } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import { create } from "domain";
+import { OrderStatus } from '../../domain/constants/order-status';
 
 
 
@@ -563,6 +564,207 @@ src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAhCAYAAACbffiEAAAACXBIW
                 furnitures
 
             }
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    getFilterOrderByCustomer = async (query: string, { page, limit }: PaginationDto) => {
+
+        try {
+
+            let orders = [];
+            let total: number = 0;
+            orders = await prismaClient.order.findMany(
+                {
+                    where: {
+                        customer: {
+                            first_name: {
+                                contains: query,
+                                mode: 'insensitive'
+
+                            },
+
+
+                        }
+
+                    },
+                    include: {
+                        customer: {
+                            select: {
+                                first_name: true,
+                                last_name: true
+                            }
+                        }
+                    },
+                    take: limit,
+                    skip: (page - 1) * limit
+                });
+
+            total = await prismaClient.order.count({
+                where: {
+                    customer: {
+                        first_name: {
+                            contains: query,
+                            mode: 'insensitive'
+
+                        },
+
+
+                    }
+                },
+            });
+
+            if (orders.length === 0) {
+                orders = await prismaClient.order.findMany(
+                    {
+                        where: {
+                            customer: {
+                                last_name: {
+                                    startsWith: query,
+                                    mode: 'insensitive'
+
+                                },
+
+
+                            }
+
+                        },
+                        include: {
+                            customer: {
+                                select: {
+                                    first_name: true,
+                                    last_name: true
+                                }
+                            }
+                        },
+                        take: limit,
+                        skip: (page - 1) * limit
+                    });
+
+                total = await prismaClient.order.count({
+                    where: {
+                        customer: {
+                            last_name: {
+                                contains: query,
+                                mode: 'insensitive'
+
+                            },
+
+
+                        }
+                    },
+                });
+
+
+            }
+
+
+
+            return {
+                ok: true,
+                orders,
+                total
+            }
+
+        } catch (error) {
+            throw error;
+        }
+
+    }
+    getAllOrders = async ({ page, limit }: PaginationDto, status: string) => {
+        try {
+
+
+            const orders = status
+                ? await prismaClient.order.findMany(
+                    {
+                        select: {
+                            id: true,
+                            status: true,
+                            total: true,
+                            created_at: true,
+                            modify_at: true,
+                            customer: {
+                                select: {
+                                    first_name: true,
+                                    last_name: true
+                                }
+                            }
+                        },
+                        orderBy: {
+                            created_at: 'desc'
+                        },
+                        take: limit,
+                        skip: (page - 1) * limit,
+                        where: {
+                            status: status as any
+                        }
+                    })
+                :
+                await prismaClient.order.findMany(
+                    {
+                        select: {
+                            id: true,
+                            status: true,
+                            total: true,
+                            created_at: true,
+                            modify_at: true,
+                            customer: {
+                                select: {
+                                    first_name: true,
+                                    last_name: true
+                                }
+                            }
+                        },
+                        orderBy: {
+                            created_at: 'desc'
+                        },
+                        take: limit,
+                        skip: (page - 1) * limit,
+                    });
+
+
+            const total = status ?
+                await prismaClient.order.count({
+                    where: { status: status as any }
+                })
+                : await prismaClient.order.count();
+
+
+            return {
+                ok: true,
+                orders,
+                total
+            }
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    changeStatus = async (user_id: string, { order_id, status }: UpdateStatusDto) => {
+        try {
+
+            const orderUpdated = await prismaClient.order.update(
+                {
+                    where: {
+                        id: order_id
+                    },
+                    data: {
+                        user_fk: user_id,
+                        status,
+                        modify_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6)),
+                    }
+                }
+            );
+
+            return {
+                ok: true,
+                orderUpdated
+            }
+
+
         } catch (error) {
             throw error;
         }
