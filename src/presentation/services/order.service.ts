@@ -539,7 +539,8 @@ src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAhCAYAAACbffiEAAAACXBIW
                 {
                     where: { id: order_id },
                     include: {
-                        customer: true
+                        customer: true,
+                        user: true
                     }
                 });
 

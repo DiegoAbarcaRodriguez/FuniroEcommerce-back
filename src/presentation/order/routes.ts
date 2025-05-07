@@ -19,6 +19,7 @@ export class OrderRoutes {
         router.get('/get-all-orders', AuthMiddleware.validateIsLoggedIn as any, orderController.getAllOrders as any);
         router.get('/get-order/:query', AuthMiddleware.validateIsLoggedIn as any, orderController.getFilterOrderByCustomer as any);
         router.patch('/update-status/:id', AuthMiddleware.validateIsLoggedIn as any, orderController.updateStatusOrder as any);
+        router.get('/from-admin/:id', AuthMiddleware.validateIsLoggedIn as any, orderController.getOrderById as any);
         router.get('/:id', CustomerAuthMiddleware.validateIsLoggedIn as any, orderController.getOrderById as any);
         router.post('/', orderController.createOrder as any);
         router.post('/execute-payment', orderController.executePayment as any);
