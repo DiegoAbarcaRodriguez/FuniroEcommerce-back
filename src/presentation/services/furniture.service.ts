@@ -42,7 +42,7 @@ export class FurnitureService {
 
         try {
 
-            const furnitures = sortBy
+            let furnitures = sortBy
                 ?
                 await prismaClient.furniture.findMany({
                     include: {
@@ -58,7 +58,8 @@ export class FurnitureService {
                 :
                 await prismaClient.furniture.findMany({
                     include: {
-                        user: true
+                        user: true,
+                        review: true
                     },
                     skip: (page - 1) * limit,
                     take: limit,
@@ -67,6 +68,10 @@ export class FurnitureService {
                     },
                 });
 
+            furnitures = furnitures.map(furniture => ({
+                reviews: furniture.review,
+                ...furniture
+            }));
 
             const total = await prismaClient.furniture.count();
 
@@ -291,7 +296,7 @@ export class FurnitureService {
                 ok: true,
                 furnitures
             }
-            
+
         } catch (error) {
             throw error;
         }
