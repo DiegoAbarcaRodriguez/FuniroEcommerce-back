@@ -9,7 +9,7 @@ export class CreateOrderDto {
         public first_name: string,
         public last_name: string,
         public email: string,
-        public phone: number,
+        public phone: string,
         public zip_code: number,
         public street: string,
         public country: string,
@@ -35,7 +35,7 @@ export class CreateOrderDto {
 
     static create(object: { [key: string]: any }): [string?, CreateOrderDto?] {
         const { first_name, last_name, email, phone, zip_code, street, country, city, province, company_name, additional_information, total, status, furniture_id, quantity, stocks, password, password2 } = object;
-
+        
         //Customer
         if (!first_name) return ['first_name is required'];
         if (!last_name) return ['last_name is required'];
@@ -77,6 +77,6 @@ export class CreateOrderDto {
         if (password !== password2) return ['The passwords are diferents'];
 
 
-        return [undefined, new CreateOrderDto(first_name, last_name, email, +phone, +zip_code, street, country, city, province, +total, status, furniture_id, quantity, password, company_name, additional_information)];
+        return [undefined, new CreateOrderDto(first_name, last_name, email, phone, +zip_code, street, country, city, province, +total, status, furniture_id, quantity, password, company_name, additional_information)];
     }
 }
