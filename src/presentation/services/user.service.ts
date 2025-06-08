@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { BcryptjsAdaptor, UUIDAdaptor } from '../../config/plugin';
 import { prismaClient } from '../../data/index';
 import { CreateUserDto, PaginationDto, UpdateUserDto } from '../../domain/dtos';
@@ -75,7 +76,7 @@ export class UserService {
                     password: BcryptjsAdaptor.hashPassword(createUserDto.password),
                     modify_by: id,
                     is_admin: false,
-                    modify_at:new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6))
+                    modify_at: DateTime.now().setZone('America/Mexico_City').toISO(),
                 },
                 select: {
                     id: true,
@@ -133,7 +134,7 @@ export class UserService {
                 data: {
                     ...updateUserDto.values,
                     modify_by: idWhoseModifys,
-                    modify_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6))
+                    modify_at: DateTime.now().setZone('America/Mexico_City').toISO(),
                 },
                 select: {
                     id: true,

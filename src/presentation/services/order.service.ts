@@ -11,6 +11,7 @@ import fs from "fs";
 import path from "path";
 import { create } from "domain";
 import { OrderStatus } from '../../domain/constants/order-status';
+import { DateTime } from "luxon";
 
 
 
@@ -24,7 +25,7 @@ export class OrderService {
                 id: UUIDAdaptor.generateUUID(),
                 total: createOrderDto.total,
                 status: createOrderDto.status,
-                created_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6)),
+                created_at: DateTime.now().setZone('America/Mexico_City').toISO(),
                 customer: {
                     connect: { id: existingCustomer.id }
                 }
@@ -54,7 +55,7 @@ export class OrderService {
                         total: createOrderDto.total,
                         status: createOrderDto.status,
                         user_fk: null,
-                        created_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6)),
+                        created_at: DateTime.now().setZone('America/Mexico_City').toISO(),
                         id: UUIDAdaptor.generateUUID()
                     }
                 }
@@ -755,7 +756,7 @@ src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAhCAYAAACbffiEAAAACXBIW
                     data: {
                         user_fk: user_id,
                         status,
-                        modify_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6)),
+                        modify_at: DateTime.now().setZone('America/Mexico_City').toISO()
                     }
                 }
             );

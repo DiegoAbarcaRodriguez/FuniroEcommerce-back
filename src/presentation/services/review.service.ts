@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { UUIDAdaptor } from "../../config/plugin";
 import { prismaClient } from "../../data";
 import { PaginationDto } from "../../domain/dtos";
@@ -57,7 +58,7 @@ export class ReviewService {
             const review = await prismaClient.review.create({
                 data: {
                     id: UUIDAdaptor.generateUUID(),
-                    created_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6)),
+                    created_at: DateTime.now().setZone('America/Mexico_City').toISO(),
                     ...reviewPayload,
                     customer: { connect: { id: customer_id } },
                     furniture: { connect: { id: furniture_id } },
@@ -73,7 +74,6 @@ export class ReviewService {
 
             });
 
-            console.log(review)
 
             return {
                 ok: true,
@@ -135,7 +135,7 @@ export class ReviewService {
                     },
                     data: {
                         ...body,
-                        created_at: new Date(new Date(new Date().toLocaleDateString('en-US', { timeZone: 'America/Mexico_City', hour: 'numeric', minute: 'numeric', second: 'numeric' }).toString()).setHours(new Date().getHours() + 6))
+                        created_at: DateTime.now().setZone('America/Mexico_City').toISO(),
                     }
                 }
             );
