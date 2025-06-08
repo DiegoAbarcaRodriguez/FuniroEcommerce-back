@@ -5,6 +5,7 @@ import { CustomError } from '../../domain/errors/custom.error';
 import { UUIDAdaptor } from '../../config/plugin';
 import { SortByDto } from '../../domain/dtos/shared/sort-by.dto';
 import { order_furniture } from '@prisma/client';
+import { DateTime } from 'luxon';
 
 
 export class FurnitureService {
@@ -20,8 +21,8 @@ export class FurnitureService {
             await prismaClient.furniture.create({
                 data: {
                     ...createFurnitureDto,
-                    id: UUIDAdaptor.generateUUID()
-
+                    id: UUIDAdaptor.generateUUID(),
+                    modify_at: DateTime.now().setZone('America/Mexico_City').toISO()
                 }
             });
 
@@ -122,7 +123,8 @@ export class FurnitureService {
             const { name } = await prismaClient.furniture.update({
                 data: updateFurnitureDto.values,
                 where: {
-                    id: furniture.id
+                    id: furniture.id,
+                    modify_at: DateTime.now().setZone('America/Mexico_City').toISO()
                 }
             });
 

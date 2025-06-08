@@ -44,6 +44,8 @@ export class ReviewService {
     createReview = async (createReviewDto: CreateReviewDto) => {
         try {
 
+            console.log(DateTime.now().setZone('America/Mexico_City').toISO())
+
             const existingReview = await prismaClient.review.findFirst({
                 where: {
                     customer_fk: createReviewDto.customer_id,
